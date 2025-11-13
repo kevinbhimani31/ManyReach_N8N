@@ -1,18 +1,16 @@
 import { IExecuteFunctions } from 'n8n-workflow';
 import { apiRequest } from '../../helpers/apiRequest';
-import { ensureId, ensureGuid } from '../../helpers/validation';
+import { ensureGuid, ensureId } from '../../helpers/validation';
 
-export async function getCampaignById(this: IExecuteFunctions, index: number) {
-
+export async function deleteCampaign(this: IExecuteFunctions, index: number) {
   const rawId = this.getNodeParameter('campaignId', index) as string | number;
   const campaignId = normalizeCampaignId(rawId);
 
-  const response = await apiRequest.call(this, 'GET', `/campaigns/${campaignId}`);
-  if (!response) {
-    throw new Error(`Campaigns with ID ${campaignId} not found`);
-  }
+  // depending on API semantics, you may do soft-delete or hard-delete
+  const response = await apiRequest.call(this, 'DELETE', `/campaigns/${campaignId}`);
 
-  return response;
+  // If API returns no content, return success body
+  return response ?? { success: true, id: campaignId };
 }
 
 function normalizeCampaignId(id: string | number): string {

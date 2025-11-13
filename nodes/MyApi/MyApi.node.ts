@@ -26,10 +26,14 @@ import { createClientspace } from './resources/clientspace/clientspace.create';
 import { createProspect } from './resources/Prospect/prospect.create';
 
 import { loadListsForDropdown } from './resources/list/list.load';
+import { loadCampaignsForDropdown } from './resources/campaign/campaign.load';
 import { getAllLists } from './resources/list/list.getAll';
 
 import { getAllCampaigns } from './resources/campaign/campaign.getAll';
 import { getCampaignById } from './resources/campaign/campaign.getById';
+import { createCampaign } from './resources/campaign/campaign.create';
+import { updateCampaign } from './resources/campaign/campaign.update';
+import { deleteCampaign } from './resources/campaign/campaign.delete';
 
 // Error handling
 import { handleExecutionError } from './helpers/errorHandler';
@@ -99,6 +103,7 @@ export class MyApi implements INodeType {
   methods = {
   loadOptions: {
     getLists: loadListsForDropdown,
+    getCampaigns: loadCampaignsForDropdown,
   },
 };
 
@@ -199,7 +204,15 @@ export class MyApi implements INodeType {
             case 'getById':
               data = await getCampaignById.call(this, i);
               break;
-
+            case 'create':
+              data = await createCampaign.call(this, i);
+              break;
+            case 'update':
+              data = await updateCampaign.call(this, i);
+              break;
+            case 'delete':
+              data = await deleteCampaign.call(this, i);
+              break;  
             default:
               throw new Error(`Operation "${operation}" not supported for Campaign`);
           }
