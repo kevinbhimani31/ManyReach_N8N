@@ -55,12 +55,40 @@ export const clientspaceFields: INodeProperties[] = [
   }),
 
   // Body
-  createField({
-    displayName: 'Clientspace Body',
-    name: 'clientspaceBody',
-    type: 'json',
-    description: 'JSON payload to create a clientspace',
+ createField({
+    displayName: 'Title',
+    name: 'Title',
+    type: 'string',
+    description: 'Title for creating or updating a clientspace',
     resource: 'clientspace',
     operations: ['create'],
   }),
+
+  createField({
+    displayName: 'SeparateCredits',
+    name: 'SeparateCredits',
+    type: 'boolean',
+    description: 'SeparateCredits for creating or updating a clientspace',
+    resource: 'clientspace',
+    operations: ['create', 'update'],
+  }),
+
+  createField({
+    displayName: 'AutoAllocate',
+    name: 'AutoAllocate',
+    type: 'boolean',
+    description: 'AutoAllocate for creating or updating a clientspace',
+    resource: 'clientspace',
+    operations: ['create', 'update'],
+  }),
+
+  createField({
+    displayName: 'CreditAmount',
+    name: 'CreditAmount',
+    type: 'number',
+    description: 'CreditAmount for creating or updating a clientspace',
+    resource: 'clientspace',
+    operations: ['create', 'update'],
+  }),
+
 ];

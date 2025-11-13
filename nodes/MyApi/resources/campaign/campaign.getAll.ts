@@ -2,18 +2,14 @@ import { IExecuteFunctions } from 'n8n-workflow';
 import { apiRequest } from '../../helpers/apiRequest';
 import { ensurePagination } from '../../helpers/validation';
 
-export async function getAllClientspaces(this: IExecuteFunctions, index: number) {
+export async function getAllCampaigns(this: IExecuteFunctions, index: number) {
   const page = this.getNodeParameter('page', index, 1) as number;
   const limit = this.getNodeParameter('limit', index, 100) as number;
   const startingAfter = this.getNodeParameter('startingAfter', index, 0) as number;
-
   ensurePagination(page, limit);
 
-  // adapt endpoint as your API expects, e.g. /users?page=1&limit=100
-  // n8n sends a real request to your API endpoint
-  const response = await apiRequest.call(this, 'GET', `/clientspaces`, {}, { page, limit , startingAfter});
+  const response = await apiRequest.call(this, 'GET', `/campaigns`, {}, { page, limit , startingAfter});
 
-  // common mapping: keep API response shape
   return {
     items: response?.data ?? response ?? [],
   };

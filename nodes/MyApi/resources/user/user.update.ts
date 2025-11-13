@@ -5,15 +5,17 @@ import { ensureGuid } from '../../helpers/validation';
 export async function updateUser(this: IExecuteFunctions, index: number) {
   const id = this.getNodeParameter('userId', index, '') as string;
   ensureGuid(id);
-
-  let body = this.getNodeParameter('userBody', index, {}) as any;
-  body = JSON.parse(body);
-  const request: UpdateUserRequest = {
-    FirstName: body.FirstName || body.firstName,
-    LastName: body.LastName || body.lastName,  
-    AccountType: body.AccountType || body.accountType,
-    Active: body.Active || body.active || true,
-  };
+   const firstName = this.getNodeParameter('FirstName', index) as string;
+   const lastName = this.getNodeParameter('LastName', index) as string;
+   const AccountType = this.getNodeParameter('AccountType', index) as number;
+   const Active = this.getNodeParameter('Active', index) as boolean;
+ 
+   const request: UpdateUserRequest = {
+     FirstName: firstName,
+     LastName: lastName,
+     Active: Active,
+     AccountType: AccountType,
+   };
 
   const response = await apiRequest.call(this, 'PATCH', `/users/${id}`, request);
 

@@ -3,15 +3,18 @@ import { apiRequest } from '../../helpers/apiRequest';
 
 export async function createUser(this: IExecuteFunctions, index: number) {
   // userBody node parameter is a JSON object
-  let body = this.getNodeParameter('userBody', index, {}) as any;
-  body = JSON.parse(body);
-  
-  const request : CreateUserRequest = {
-    Email: body.Email || body.email,
-    FirstName: body.FirstName || body.firstName,
-    LastName: body.LastName || body.lastName,
-    Active: body.Active || body.active || true,
-    AccountType: body.AccountType || body.accountType,
+  const email = this.getNodeParameter('Email', index) as string;
+  const firstName = this.getNodeParameter('FirstName', index) as string;
+  const lastName = this.getNodeParameter('LastName', index) as string;
+  const AccountType = this.getNodeParameter('AccountType', index) as number;
+  const Active = this.getNodeParameter('Active', index) as boolean;
+
+  const request: CreateUserRequest = {
+    Email: email,
+    FirstName: firstName,
+    LastName: lastName,
+    Active: Active,
+    AccountType: AccountType,
   };
   
   // adapt endpoint and payload according to your API

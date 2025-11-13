@@ -10,6 +10,7 @@ import { userOperations, userFields } from './descriptions/user.descriptions';
 import { clientspaceOperations, clientspaceFields } from './descriptions/clientspace.descriptions';
 import { prospectOperations, prospectFields } from './descriptions/prospect.descriptions';
 import { listOperations, listFields } from './descriptions/list.descriptions';
+import { campaignOperations, campaignFields } from './descriptions/campaign.descriptions';
 
 // Import API handlers
 import { getAllUsers } from './resources/user/user.getAll';
@@ -27,6 +28,9 @@ import { createProspect } from './resources/Prospect/prospect.create';
 import { loadListsForDropdown } from './resources/list/list.load';
 import { getAllLists } from './resources/list/list.getAll';
 
+import { getAllCampaigns } from './resources/campaign/campaign.getAll';
+import { getCampaignById } from './resources/campaign/campaign.getById';
+
 // Error handling
 import { handleExecutionError } from './helpers/errorHandler';
 
@@ -34,7 +38,7 @@ export class MyApi implements INodeType {
   description: INodeTypeDescription = {
     displayName: 'ManyReach',
     name: 'myApi',
-    icon: 'file:icons8-iron-man-50.svg',
+    icon: 'file:ManyReach.png',
     group: ['transform'],
     version: 1,
     description: 'Interact with ManyReach API',
@@ -66,6 +70,7 @@ export class MyApi implements INodeType {
           { name: 'Client Space', value: 'clientspace' },
           { name: 'Prospect', value: 'prospect' },
           { name: 'List', value: 'list' },
+          { name: 'Campaign', value: 'campaign'},
         ],
       },
 
@@ -81,6 +86,9 @@ export class MyApi implements INodeType {
 
       ...listOperations,
       ...listFields,
+
+      ...campaignOperations,
+      ...campaignFields,
     ],
   };
 
@@ -178,6 +186,22 @@ export class MyApi implements INodeType {
 
             default:
               throw new Error(`Operation "${operation}" not supported for List`);
+          }
+        }
+
+        // CAMPAIGN RESOURCE
+        else if (resource === 'campaign') {
+          switch (operation) {
+            case 'getAll':
+              data = await getAllCampaigns.call(this, i);
+              break;
+
+            case 'getById':
+              data = await getCampaignById.call(this, i);
+              break;
+
+            default:
+              throw new Error(`Operation "${operation}" not supported for Campaign`);
           }
         }
 

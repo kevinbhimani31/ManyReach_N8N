@@ -49,11 +49,47 @@ export const userFields: INodeProperties[] = [
 
   // User Body
   createField({
-    displayName: 'User Body',
-    name: 'userBody',
-    type: 'json',
-    description: 'JSON object for creating or updating a user',
+    displayName: 'Email',
+    name: 'Email',
+    type: 'string',
+    description: 'Email for creating or updating a user',
+    resource: 'user',
+    operations: ['create'],
+  }),
+
+  createField({
+    displayName: 'FirstName',
+    name: 'FirstName',
+    type: 'string',
+    description: 'FirstName for creating or updating a user',
     resource: 'user',
     operations: ['create', 'update'],
   }),
+  createField({
+    displayName: 'LastName',
+    name: 'LastName',
+    type: 'string',
+    description: 'LastName for creating or updating a user',
+    resource: 'user',
+    operations: ['create', 'update'],
+  }),
+
+  createField({
+    displayName: 'Active',
+    name: 'Active',
+    type: 'boolean',
+    description: 'boolean for creating or updating a user',
+    resource: 'user',
+    operations: ['create', 'update'],
+  }),
+
+  createField({
+    displayName: 'AccountType',
+    name: 'AccountType',
+    type: 'number',
+    description: 'AccountType for creating or updating a user',
+    resource: 'user',
+    operations: ['create', 'update'],
+  }),
+
 ];
