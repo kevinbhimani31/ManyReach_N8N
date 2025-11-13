@@ -6,12 +6,13 @@ export async function updateUser(this: IExecuteFunctions, index: number) {
   const id = this.getNodeParameter('userId', index, '') as string;
   ensureGuid(id);
 
-  const body = this.getNodeParameter('userBody', index, {}) as any;
+  let body = this.getNodeParameter('userBody', index, {}) as any;
+  body = JSON.parse(body);
   const request: UpdateUserRequest = {
-    FirstName: body.FirstName,
-    LastName: body.LastName,  
-    AccountType: body.AccountType,
-    Active: body.Active,
+    FirstName: body.FirstName || body.firstName,
+    LastName: body.LastName || body.lastName,  
+    AccountType: body.AccountType || body.accountType,
+    Active: body.Active || body.active || true,
   };
 
   const response = await apiRequest.call(this, 'PATCH', `/users/${id}`, request);

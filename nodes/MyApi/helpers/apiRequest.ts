@@ -1,7 +1,7 @@
-import { IExecuteFunctions } from 'n8n-workflow';
+import { IExecuteFunctions , ILoadOptionsFunctions} from 'n8n-workflow';
 
 export async function apiRequest(
-  this: IExecuteFunctions,
+  this: IExecuteFunctions | ILoadOptionsFunctions,
   method: string,
   endpoint: string,
   body: any = {},
@@ -14,6 +14,7 @@ export async function apiRequest(
 
   const baseUrl = (credentials as any).baseUrl;
   const apiKey = (credentials as any).apiKey;
+  const creds = credentials as { authCookie: string };
 
   if (!baseUrl) {
     throw new Error('Base URL missing in credentials');
@@ -28,6 +29,7 @@ export async function apiRequest(
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      'Cookie': `.ASPXAUTH=${creds.authCookie}`,
       'X-API-Key': apiKey, // ✅ Add your API key header (no Bearer)
     },
     rejectUnauthorized: false, // ✅ Ignore SSL for localhost

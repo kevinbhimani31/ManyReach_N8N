@@ -20,5 +20,12 @@ export class MyApi implements ICredentialType {
       default: '',
       description: 'API key or Bearer token to authenticate requests',
     },
+    {
+      displayName: '.ASPXAUTH Cookie',
+      name: 'authCookie',
+      type: 'string' as NodePropertyTypes,
+      default: '',
+      description: 'Value of the ASPXAUTH authentication cookie',
+    },
   ];
 }

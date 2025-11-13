@@ -1,22 +1,34 @@
 import {
   IExecuteFunctions,
-  INodeType,
   INodeExecutionData,
+  INodeType,
   INodeTypeDescription,
 } from 'n8n-workflow';
 
-import { handleExecutionError } from './helpers/errorHandler';
+// Import reusable descriptions
+import { userOperations, userFields } from './descriptions/user.descriptions';
+import { clientspaceOperations, clientspaceFields } from './descriptions/clientspace.descriptions';
+import { prospectOperations, prospectFields } from './descriptions/prospect.descriptions';
+import { listOperations, listFields } from './descriptions/list.descriptions';
+
+// Import API handlers
 import { getAllUsers } from './resources/user/user.getAll';
 import { getUserById } from './resources/user/user.getById';
 import { createUser } from './resources/user/user.create';
 import { updateUser } from './resources/user/user.update';
 import { deleteUser } from './resources/user/user.delete';
+
 import { getAllClientspaces } from './resources/clientspace/clientspace.getAll';
 import { getClientspaceById } from './resources/clientspace/clientspace.getById';
 import { createClientspace } from './resources/clientspace/clientspace.create';
 
-// Model 
-// import { CreateClientspaceRequest } from './resources/clientspace/clientspace.create';
+import { createProspect } from './resources/Prospect/prospect.create';
+
+import { loadListsForDropdown } from './resources/list/list.load';
+import { getAllLists } from './resources/list/list.getAll';
+
+// Error handling
+import { handleExecutionError } from './helpers/errorHandler';
 
 export class MyApi implements INodeType {
   description: INodeTypeDescription = {
@@ -25,213 +37,159 @@ export class MyApi implements INodeType {
     icon: 'file:icons8-iron-man-50.svg',
     group: ['transform'],
     version: 1,
-    description: 'Interact with My API',
+    description: 'Interact with ManyReach API',
+
     defaults: {
       name: 'MyApi',
       color: '#1A82e2',
     },
+
     inputs: ['main'],
     outputs: ['main'],
+
     credentials: [
       {
         name: 'myApi',
         required: true,
       },
     ],
+
     properties: [
+      // Resource Selector
       {
         displayName: 'Resource',
         name: 'resource',
         type: 'options',
-        options: [
-          {
-            name: 'User',
-            value: 'user',
-          },
-          {
-            name: 'Client Space',
-            value: 'clientspace',
-          }
-        ],
         default: 'user',
-        description: 'Resource to operate on',
-      },
-      {
-        displayName: 'Operation',
-        name: 'operation',
-        type: 'options',
-        displayOptions: {
-          show: {
-            resource: ['user'],
-          },
-        },
         options: [
-          { name: 'Get All', value: 'getAll', description: 'Get all users' },
-          { name: 'Get By ID', value: 'getById', description: 'Get user by ID' },
-          { name: 'Create', value: 'create', description: 'Create a user' },
-          { name: 'Update', value: 'update', description: 'Update user' },
-          { name: 'Delete', value: 'delete', description: 'Delete user' },
+          { name: 'User', value: 'user' },
+          { name: 'Client Space', value: 'clientspace' },
+          { name: 'Prospect', value: 'prospect' },
+          { name: 'List', value: 'list' },
         ],
-        default: 'getAll',
-      },
-      {
-        displayName: 'Operation',
-        name: 'operation',
-        type: 'options',
-        displayOptions: {
-          show: {
-            resource: ['clientspace'],
-          },
-        },
-        options: [
-          { name: 'Get All', value: 'getAll', description: 'Get all client spaces' },
-          { name: 'Get By ID', value: 'getById', description: 'Get client space by ID' },
-          { name: 'Create', value: 'create', description: 'Create a client space' },
-        ],
-        default: 'getAll',
       },
 
-      // Generic inputs used by operations; shown/hidden using displayOptions inside resource files below
-      {
-        displayName: 'Page',
-        name: 'page',
-        type: 'number',
-        default: 1,
-        displayOptions: { show: { resource: ['user', 'clientspace'], operation: ['getAll'] } },
-      },
-      {
-        displayName: 'Limit',
-        name: 'limit',
-        type: 'number',
-        default: 100,
-        displayOptions: { show: { resource: ['user', 'clientspace'], operation: ['getAll'] } },
-      },
-      {
-        displayName: 'User ID (GUID)',
-        name: 'userId',
-        type: 'string',
-        default: '',
-        displayOptions: {
-          show: {
-            resource: ['user'],
-            operation: ['getById', 'update', 'delete'],
-          },
-        },
-      },
-      {
-        displayName: 'Clientspace ID (Number)',
-        name: 'clientspaceId',
-        type: 'number',
-        default: '',
-        displayOptions: {
-          show: {
-            resource: ['clientspace'],
-            operation: ['getById'],
-          },
-        },
-      },
-      {
-        displayName: 'User Body (JSON)',
-        name: 'userBody',
-        type: 'json',
-        default: {},
-        description: 'JSON object for create/update requests',
-        displayOptions: {
-          show: {
-            resource: ['user'],
-            operation: ['create', 'update'],
-          },
-        },
-      },
-      {
-        displayName: 'Clientspace Body (JSON)',
-        name: 'clientspaceBody',
-        type: 'json',
-        default: {},
-        description: 'JSON object for create/update requests',
-        displayOptions: {
-          show: {
-            resource: ['clientspace'],
-            operation: ['create'],
-          },
-        },
-      },
-      {
-        displayName: 'Starting After',
-        name: 'startingAfter',
-        type: 'number',
-        default: 0,
-        displayOptions: { show: { resource: ['clientspace'], operation: ['getAll'] } },
-      },
+      // Injected dynamic description files
+      ...userOperations,
+      ...userFields,
+
+      ...clientspaceOperations,
+      ...clientspaceFields,
+
+      ...prospectOperations,
+      ...prospectFields,
+
+      ...listOperations,
+      ...listFields,
     ],
   };
 
+  // ----------------------------
+  // Load Options Methods
+  // ----------------------------
+
+  methods = {
+  loadOptions: {
+    getLists: loadListsForDropdown,
+  },
+};
+
+  // ----------------------------
+  // Main execute handler
+  // ----------------------------
+
   async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
     const items = this.getInputData();
+    const returnData: INodeExecutionData[] = [];
+
     const resource = this.getNodeParameter('resource', 0) as string;
     const operation = this.getNodeParameter('operation', 0) as string;
 
-    const returnData: INodeExecutionData[] = [];
-    // iterate items (support batch)
     for (let i = 0; i < items.length; i++) {
       try {
+        let data;
+
+        // USER RESOURCE
         if (resource === 'user') {
           switch (operation) {
-            case 'getAll': {
-              const data = await getAllUsers.call(this, i);
-              returnData.push({ json: data } as INodeExecutionData);
+            case 'getAll':
+              data = await getAllUsers.call(this, i);
               break;
-            }
-            case 'getById': {
-              const data = await getUserById.call(this, i);
-              returnData.push({ json: data } as INodeExecutionData);
+
+            case 'getById':
+              data = await getUserById.call(this, i);
               break;
-            }
-            case 'create': {
-              const data = await createUser.call(this, i);
-              returnData.push({ json: data } as INodeExecutionData);
+
+            case 'create':
+              data = await createUser.call(this, i);
               break;
-            }
-            case 'update': {
-              const data = await updateUser.call(this, i);
-              returnData.push({ json: data } as INodeExecutionData);
+
+            case 'update':
+              data = await updateUser.call(this, i);
               break;
-            }
-            case 'delete': {
-              const data = await deleteUser.call(this, i);
-              returnData.push({ json: data } as INodeExecutionData);
+
+            case 'delete':
+              data = await deleteUser.call(this, i);
               break;
-            }
+
             default:
-              throw new Error(`Operation "${operation}" is not supported for resource "${resource}"`);
+              throw new Error(`Operation "${operation}" not supported for User`);
           }
-        } else if (resource === 'clientspace') {
+        }
+
+        // CLIENTSPACE RESOURCE
+        else if (resource === 'clientspace') {
           switch (operation) {
-            case 'getAll': {
-              const data = await getAllClientspaces.call(this, i);
-              returnData.push({ json: data } as INodeExecutionData);
+            case 'getAll':
+              data = await getAllClientspaces.call(this, i);
               break;
-            }
-            case 'getById': {
-              const data = await getClientspaceById.call(this, i);
-              returnData.push({ json: data } as INodeExecutionData);
+
+            case 'getById':
+              data = await getClientspaceById.call(this, i);
               break;
-            }
-            case 'create': {
-              const data = await createClientspace.call(this, i);
-              returnData.push({ json: data } as INodeExecutionData);
+
+            case 'create':
+              data = await createClientspace.call(this, i);
               break;
-            }
+
             default:
-              throw new Error(`Operation "${operation}" is not supported for resource "${resource}"`);
+              throw new Error(`Operation "${operation}" not supported for Clientspace`);
           }
-        } else {
+        }
+
+        // PROSPECT RESOURCE
+        else if (resource === 'prospect') {
+          switch (operation) {
+            case 'create':
+              data = await createProspect.call(this, i);
+              break;
+
+            default:
+              throw new Error(`Operation "${operation}" not supported for Prospect`);
+          }
+        }
+
+        // LIST RESOURCE
+        else if (resource === 'list') {
+          switch (operation) {
+            case 'getAll':
+              data = await getAllLists.call(this, i);
+              break;
+
+            default:
+              throw new Error(`Operation "${operation}" not supported for List`);
+          }
+        }
+
+        else {
           throw new Error(`Resource "${resource}" not supported`);
         }
+
+        returnData.push({ json: data });
+
       } catch (error) {
-        // centralized handling - returns an item with error payload
-        const errItem = handleExecutionError(error);
-        returnData.push({ json: errItem } as INodeExecutionData);
+        const err = handleExecutionError(error);
+        returnData.push({ json: err });
       }
     }
 
