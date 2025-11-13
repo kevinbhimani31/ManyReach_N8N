@@ -7,10 +7,10 @@ export async function getAllCampaigns(this: IExecuteFunctions, index: number) {
   const limit = this.getNodeParameter('limit', index, 100) as number;
   const startingAfter = this.getNodeParameter('startingAfter', index, 0) as number;
   ensurePagination(page, limit);
-
   const response = await apiRequest.call(this, 'GET', `/campaigns`, {}, { page, limit , startingAfter});
 
   return {
     items: response?.data ?? response ?? [],
   };
+  
 }
