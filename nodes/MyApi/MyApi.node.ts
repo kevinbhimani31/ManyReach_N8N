@@ -26,7 +26,10 @@ import { createClientspace } from './resources/clientspace/clientspace.create';
 import { createProspect } from './resources/Prospect/prospect.create';
 
 import { loadListsForDropdown } from './resources/list/list.load';
-import { loadCampaignsForDropdown } from './resources/campaign/campaign.load';
+import { loadCampaignsForDropdown, searchCampaignsForResourceLocator } from './resources/campaign/load/campaign.load';
+import { loadUsersForDropdown, searchUsersForResourceLocator } from './resources/user/load/user.load';
+import { loadClientspacesForDropdown, searchClientspacesForResourceLocator } from './resources/clientspace/load/clientspace.load';
+
 import { getAllLists } from './resources/list/list.getAll';
 
 import { getAllCampaigns } from './resources/campaign/campaign.getAll';
@@ -74,7 +77,7 @@ export class MyApi implements INodeType {
           { name: 'Client Space', value: 'clientspace' },
           { name: 'Prospect', value: 'prospect' },
           { name: 'List', value: 'list' },
-          { name: 'Campaign', value: 'campaign'},
+          { name: 'Campaign', value: 'campaign' },
         ],
       },
 
@@ -101,11 +104,18 @@ export class MyApi implements INodeType {
   // ----------------------------
 
   methods = {
-  loadOptions: {
-    getLists: loadListsForDropdown,
-    getCampaigns: loadCampaignsForDropdown,
-  },
-};
+    loadOptions: {
+      getLists: loadListsForDropdown,
+      getCampaigns: loadCampaignsForDropdown,
+      getUsers: loadUsersForDropdown,
+      getClientspaces: loadClientspacesForDropdown,
+    },
+    listSearch: {
+      searchCampaigns: searchCampaignsForResourceLocator,
+      searchUsers: searchUsersForResourceLocator,
+      searchClientspaces: searchClientspacesForResourceLocator,
+    },
+  };
 
   // ----------------------------
   // Main execute handler
@@ -212,7 +222,7 @@ export class MyApi implements INodeType {
               break;
             case 'delete':
               data = await deleteCampaign.call(this, i);
-              break;  
+              break;
             default:
               throw new Error(`Operation "${operation}" not supported for Campaign`);
           }

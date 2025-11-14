@@ -1,9 +1,10 @@
 import { IExecuteFunctions } from 'n8n-workflow';
 import { apiRequest } from '../../helpers/apiRequest';
-import { ensureId } from '../../helpers/validation';
+import { ensureId, extractNumericId } from '../../helpers/validation';
 
 export async function getClientspaceById(this: IExecuteFunctions, index: number) {
-  const id = this.getNodeParameter('clientspaceId', index, 0) as number;
+  const rawId = this.getNodeParameter('clientspaceId', index) as any;
+  const id = extractNumericId(rawId, 'Clientspace ID');
   ensureId(id);
 
   const response = await apiRequest.call(this, 'GET', `/clientspaces/${id}`);

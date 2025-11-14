@@ -48,20 +48,18 @@ export const prospectFields: INodeProperties[] = [
     resource: 'prospect',
     operations: ['create'],
   }),
-   {
+  createField({
     displayName: 'Base List',
     name: 'baseListId',
     type: 'options',
-    default: '',
+    default: 0,
+    description: 'Select the list to add this prospect to',
     typeOptions: {
       loadOptionsMethod: 'getLists',
+      customValue: true,
+      customValueType: 'number',
     },
-    displayOptions: {
-      show: {
-        resource: ['prospect'],
-        operation: ['create'],
-      },
-    },
-    description: 'Select the list to add this prospect to',
-  },
+    resource: 'prospect',
+    operations: ['create'],
+  }),
 ];

@@ -47,11 +47,40 @@ export const clientspaceFields: INodeProperties[] = [
 
   // Clientspace ID
   createField({
-    displayName: 'Clientspace ID',
+    displayName: 'Clientspace',
     name: 'clientspaceId',
-    type: 'number',
+    type: 'resourceLocator',
+    description: 'Select a clientspace from the list or enter its ID',
     resource: 'clientspace',
     operations: ['getById'],
+    modes: [
+      {
+        displayName: 'From list',
+        name: 'list',
+        type: 'list',
+        placeholder: 'Select a clientspace...',
+        typeOptions: {
+          searchListMethod: 'searchClientspaces',
+          searchable: true,
+          searchFilterRequired: false,
+        },
+      },
+      {
+        displayName: 'By ID',
+        name: 'id',
+        type: 'string',
+        placeholder: 'Enter clientspace ID',
+        validation: [
+          {
+            type: 'regex',
+            properties: {
+              regex: '^\\d+$',
+              errorMessage: 'Only numeric IDs are allowed',
+            },
+          },
+        ],
+      },
+    ],
   }),
 
   // Body
@@ -70,7 +99,7 @@ export const clientspaceFields: INodeProperties[] = [
     type: 'boolean',
     description: 'SeparateCredits for creating or updating a clientspace',
     resource: 'clientspace',
-    operations: ['create', 'update'],
+    operations: ['create', 'update' , 'getById'],
   }),
 
   createField({
