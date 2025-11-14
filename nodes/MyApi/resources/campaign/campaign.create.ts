@@ -38,6 +38,15 @@ export async function createCampaign(this: IExecuteFunctions, index: number) {
 		'dailyLimitIncreasePercent',
 	];
 
+  const fromEmail = this.getNodeParameter('fromEmail', index, null) as string | null;
+
+// If user selected nothing OR selected "Clear Value"
+  if (!fromEmail) {
+    body.fromEmail = null;     // Pass null to API
+  } else {
+    body.fromEmail = fromEmail; // Pass selected email
+  }
+
 	topLevelFields.forEach((field) => {
 		const val = this.getNodeParameter(field, index, undefined);
 		if (val !== undefined && val !== '') {

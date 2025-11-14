@@ -11,6 +11,7 @@ export function createField(options: {
   description?: string;
   resource?: string;
   operations?: string[];
+  required?: boolean;
   optionsList?: { name: string; value: string | number ; description?: string }[];
   placeholder?: string;
   typeOptions?: INodeProperties['typeOptions'];
@@ -23,6 +24,7 @@ export function createField(options: {
     name: options.name,
     type: options.type,
     default: options.default ?? getDefaultForType(options.type),
+    required: options.required ?? false,
   };
 
   if (options.description) {

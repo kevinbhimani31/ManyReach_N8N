@@ -26,7 +26,7 @@ import { createClientspace } from './resources/clientspace/clientspace.create';
 import { createProspect } from './resources/Prospect/prospect.create';
 
 import { loadListsForDropdown } from './resources/list/list.load';
-import { loadCampaignsForDropdown, searchCampaignsForResourceLocator } from './resources/campaign/load/campaign.load';
+import { loadCampaignsForDropdown, loadSendersForDropdown, searchCampaignsForResourceLocator } from './resources/campaign/load/campaign.load';
 import { loadUsersForDropdown, searchUsersForResourceLocator } from './resources/user/load/user.load';
 import { loadClientspacesForDropdown, searchClientspacesForResourceLocator } from './resources/clientspace/load/clientspace.load';
 
@@ -109,6 +109,7 @@ export class MyApi implements INodeType {
       getCampaigns: loadCampaignsForDropdown,
       getUsers: loadUsersForDropdown,
       getClientspaces: loadClientspacesForDropdown,
+      getSenders: loadSendersForDropdown,
     },
     listSearch: {
       searchCampaigns: searchCampaignsForResourceLocator,

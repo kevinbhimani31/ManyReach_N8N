@@ -89,56 +89,6 @@ export const campaignFields: INodeProperties[] = [
     ],
   }),
 
-  // // Create
-  // createField({
-  //   displayName: 'Campaign Name',
-  //   name: 'campaignName',
-  //   type: 'string',
-  //   description: 'Campaign Name to create a clientspace',
-  //   resource: 'campaign',
-  //   operations: ['create'],
-  // }),
-  // createField({
-  //   displayName: 'Campaign Description',
-  //   name: 'campaignDescription',
-  //   type: 'string',
-  //   description: 'Campaign Description to create a clientspace',
-  //   resource: 'campaign',
-  //   operations: ['create'],
-  // }),
-  // {
-  //   displayName: 'Additional Fields',
-  //   name: 'additionalFields',
-  //   type: 'collection',
-  //   placeholder: 'Add Field',
-  //   default: {},
-  //   displayOptions: {
-  //     show: {
-  //       resource: ['campaign'],  // or your resource
-  //       operation: ['create'],   // choose your operation
-  //     },
-  //   },
-  //   options: [
-  //     {
-  //       displayName: 'CcEmails',
-  //       name: 'CcEmails',
-  //       type: 'string',
-  //       default: "",
-  //     },
-  //     {
-  //       displayName: 'BccEmails',
-  //       name: 'BccEmails',
-  //       type: 'string',
-  //       default: '',
-  //     },
-  //     {
-  //       displayName: 'Daily Limit',
-  //       name: 'dailyLimit',
-  //       type: 'number',
-  //       default: 0,
-  //     },
-  //   ],
-  // },
 
   // ----------------------------
 // CREATE — MAIN FIELDS
@@ -162,13 +112,19 @@ createField({
 }),
 
 createField({
-  displayName: 'From Email',
-  name: 'fromEmail',
-  type: 'string',
-  description: 'Sender email address',
-  resource: 'campaign',
-  operations: ['create'],
-}),
+    displayName: 'From Email',
+    name: 'fromEmail',
+    type: 'options',
+    description: 'Sender email address',
+    required: false,                   
+    typeOptions: {
+      loadOptionsMethod: 'getSenders',
+      customValue: true,
+      customValueType: 'string',
+    },
+    resource: 'campaign',
+    operations: ['create'],
+  }),
 
 createField({
   displayName: 'From Name',

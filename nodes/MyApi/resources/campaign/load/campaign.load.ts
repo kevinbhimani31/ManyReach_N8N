@@ -57,3 +57,30 @@ export async function searchCampaignsForResourceLocator(
   return { results };
 }
 
+export async function loadSendersForDropdown(
+  this: ILoadOptionsFunctions,
+): Promise<INodePropertyOptions[]> {
+
+  const response = await apiRequest.call(
+    this,
+    'GET',
+    '/senders',
+    {},
+    { page: 1, limit: 100 }
+  );
+
+  let senders: any[] = [];
+
+  if (Array.isArray(response?.items)) {
+    senders = response.items;
+  } else if (Array.isArray(response)) {
+    senders = response;
+  } else {
+    throw new Error('Unexpected API response format for /v2/senders');
+  }
+
+  return senders.map((sender: any) => ({
+    name: sender?.email ?? '',
+    value: sender?.email,   // You want email as the value for From Email
+  }));
+}
