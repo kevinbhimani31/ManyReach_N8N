@@ -1,4 +1,4 @@
-import { IExecuteFunctions , ILoadOptionsFunctions} from 'n8n-workflow';
+import { IExecuteFunctions, ILoadOptionsFunctions } from 'n8n-workflow';
 
 export async function apiRequest(
   this: IExecuteFunctions | ILoadOptionsFunctions,
@@ -29,10 +29,10 @@ export async function apiRequest(
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      'Cookie': `.ASPXAUTH=${creds.authCookie}`,
-      'X-API-Key': apiKey, // ✅ Add your API key header (no Bearer)
+      'Cookie': `.ASPXAUTH=${creds.authCookie}`, // Include auth cookie in headers
+      'X-API-Key': apiKey,  // Include API key in headers
     },
-    rejectUnauthorized: false, // ✅ Ignore SSL for localhost
+    rejectUnauthorized: false, // ignore SSL certificate errors
   };
 
   try {

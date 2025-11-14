@@ -22,6 +22,8 @@ import { deleteUser } from './resources/user/user.delete';
 import { getAllClientspaces } from './resources/clientspace/clientspace.getAll';
 import { getClientspaceById } from './resources/clientspace/clientspace.getById';
 import { createClientspace } from './resources/clientspace/clientspace.create';
+import { updateClientspace } from './resources/clientspace/clientspace.update';
+import { deleteClientspace } from './resources/clientspace/clientspace.delete';
 
 import { createProspect } from './resources/Prospect/prospect.create';
 
@@ -74,10 +76,10 @@ export class MyApi implements INodeType {
         default: 'user',
         options: [
           { name: 'User', value: 'user' },
-          { name: 'Client Space', value: 'clientspace' },
+          { name: 'Campaign', value: 'campaign' },
           { name: 'Prospect', value: 'prospect' },
           { name: 'List', value: 'list' },
-          { name: 'Campaign', value: 'campaign' },
+          { name: 'Client Space', value: 'clientspace' },
         ],
       },
 
@@ -85,17 +87,18 @@ export class MyApi implements INodeType {
       ...userOperations,
       ...userFields,
 
-      ...clientspaceOperations,
-      ...clientspaceFields,
-
+      ...campaignOperations,
+      ...campaignFields,
+      
       ...prospectOperations,
       ...prospectFields,
-
+      
       ...listOperations,
       ...listFields,
 
-      ...campaignOperations,
-      ...campaignFields,
+      ...clientspaceOperations,
+      ...clientspaceFields,
+
     ],
   };
 
@@ -175,7 +178,12 @@ export class MyApi implements INodeType {
             case 'create':
               data = await createClientspace.call(this, i);
               break;
-
+            case 'update':
+              data = await updateClientspace.call(this, i);
+              break;
+            case 'delete':
+              data = await deleteClientspace.call(this, i);
+              break;
             default:
               throw new Error(`Operation "${operation}" not supported for Clientspace`);
           }

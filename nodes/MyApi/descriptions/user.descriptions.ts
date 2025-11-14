@@ -122,6 +122,7 @@ export const userFields: INodeProperties[] = [
     resource: 'user',
     operations: ['create'],
     optionsList: CreateUserRoles,
+    default: 'User',
   }),
 
   createField({
@@ -132,6 +133,7 @@ export const userFields: INodeProperties[] = [
     resource: 'user',
     operations: ['update'],
     optionsList: UpdateUserRoles,
+    default: 'User',
   }),
 
 ];
