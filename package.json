@@ -15,16 +15,16 @@
 		"type": "git",
 		"url": "https://github.com/<...>/n8n-nodes-<...>.git"
 	},
-	"scripts": {
-		"build": "tsc",
-		"watch": "tsc --watch",
-		"dev": "n8n-node dev",
-		"lint": "n8n-node lint",
-		"lint:fix": "n8n-node lint --fix",
-		"release": "n8n-node release",
-		"prepublishOnly": "n8n-node prerelease",
-		"start": "n8n"
-	},
+"scripts": {
+  "build": "tsc",
+  "watch": "nodemon --watch nodes --ext ts --exec \"npm run build\"",
+  "dev": "concurrently \"npm run watch\" \"n8n\"",
+  "lint": "n8n-node lint",
+  "lint:fix": "n8n-node lint --fix",
+  "release": "n8n-node release",
+  "prepublishOnly": "n8n-node prerelease",
+  "start": "n8n"
+},
 	"files": [
 		"dist"
 	],
@@ -43,9 +43,12 @@
 	"devDependencies": {
 		"@n8n/node-cli": "*",
 		"@types/node": "^24.10.0",
+		"concurrently": "^9.2.1",
 		"eslint": "9.32.0",
+		"nodemon": "^3.1.11",
 		"prettier": "3.6.2",
 		"release-it": "^19.0.4",
+		"ts-node": "^10.9.2",
 		"typescript": "5.9.2"
 	},
 	"peerDependencies": {
