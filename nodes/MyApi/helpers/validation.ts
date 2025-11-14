@@ -23,3 +23,37 @@ export function ensureId(id: number) {
     throw new Error(`Invalid ID received: ${id}. Please provide a valid numeric ID.`);
   }
 }
+
+type ResourceLocatorInput = number | string | { value?: number | string | null } | null | undefined;
+
+export function extractNumericId(value: ResourceLocatorInput, fieldLabel: string): number {
+  if (value && typeof value === 'object' && 'value' in value) {
+    return extractNumericId(value.value as ResourceLocatorInput, fieldLabel);
+  }
+
+  const numericValue = typeof value === 'number' ? value : Number(value);
+
+  if (!Number.isFinite(numericValue)) {
+    throw new Error(`${fieldLabel} must be a numeric ID.`);
+  }
+
+  return numericValue;
+}
+
+export function extractStringId(value: ResourceLocatorInput, fieldLabel: string): string {
+  if (value && typeof value === 'object' && 'value' in value) {
+    return extractStringId(value.value as ResourceLocatorInput, fieldLabel);
+  }
+
+  if (value === undefined || value === null) {
+    throw new Error(`${fieldLabel} is required.`);
+  }
+
+  const stringValue = String(value).trim();
+
+  if (!stringValue) {
+    throw new Error(`${fieldLabel} must not be empty.`);
+  }
+
+  return stringValue;
+}

@@ -1,9 +1,10 @@
 import { IExecuteFunctions } from 'n8n-workflow';
 import { apiRequest } from '../../helpers/apiRequest';
-import { ensureGuid } from '../../helpers/validation';
+import { ensureGuid, extractStringId } from '../../helpers/validation';
 
 export async function getUserById(this: IExecuteFunctions, index: number) {
-  const id = this.getNodeParameter('userId', index, '') as string;
+  const rawId = this.getNodeParameter('userId', index) as any;
+  const id = extractStringId(rawId, 'User ID');
   ensureGuid(id);
 
   const response = await apiRequest.call(this, 'GET', `/users/${id}`);

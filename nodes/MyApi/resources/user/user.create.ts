@@ -30,3 +30,9 @@ export interface CreateUserRequest{
   AccountType?: number;
   Active: boolean;
 }
+
+export const CreateUserRoles = [
+  { name: 'User', value: 30, description: 'User' },
+  { name: 'Admin', value: 100, description: 'Admin' },
+  { name: 'Super Admin', value: 110, description: 'Super Admin' },
+];

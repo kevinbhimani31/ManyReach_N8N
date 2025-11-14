@@ -49,20 +49,47 @@ export const campaignFields: INodeProperties[] = [
 
   // campaign ID
   createField({
-    displayName: 'Campaign ID',
+    displayName: 'Campaign',
     name: 'campaignId',
-    type: 'options',
-    default: '',
-    description: 'Select a campaign or enter its ID manually',
-    typeOptions: {
-      loadOptionsMethod: 'getCampaigns',
-      customValue: true,
+    type: 'resourceLocator',
+    default: {
+      mode: 'list',
+      value: '',
     },
+    description: 'Select a campaign from the list or enter its numeric ID manually',
     resource: 'campaign',
     operations: ['getById', 'update', 'delete'],
+    modes: [
+      {
+        displayName: 'From list',
+        name: 'list',
+        type: 'list',
+        placeholder: 'Select a campaign...',
+        typeOptions: {
+          searchListMethod: 'searchCampaigns',
+          searchable: true,
+          searchFilterRequired: false,
+        },
+      },
+      {
+        displayName: 'By ID',
+        name: 'id',
+        type: 'string',
+        placeholder: 'Enter campaign ID',
+        validation: [
+          {
+            type: 'regex',
+            properties: {
+              regex: '^\\d+$',
+              errorMessage: 'Only numeric IDs are allowed',
+            },
+          },
+        ],
+      },
+    ],
   }),
 
-  // Create
+  // Create 
   createField({
     displayName: 'Campaign Name',
     name: 'campaignName',

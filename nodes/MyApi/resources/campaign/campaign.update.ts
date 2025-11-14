@@ -1,6 +1,6 @@
 import { IExecuteFunctions } from 'n8n-workflow';
 import { apiRequest } from '../../helpers/apiRequest';
-import { ensureGuid, ensureId } from '../../helpers/validation';
+import { ensureId, extractNumericId } from '../../helpers/validation';
 
 export interface UpdateCampaignRequest {
   FolderId?: number;
@@ -70,10 +70,10 @@ export interface UpdateCampaignRequest {
 }
 
 export async function updateCampaign(this: IExecuteFunctions, index: number) {
-  const rawCampaignId = this.getNodeParameter('campaignId', index) as string | number;
+  const rawCampaignId = this.getNodeParameter('campaignId', index) as any;
+  const campaignId = extractNumericId(rawCampaignId, 'Campaign ID');
+  ensureId(campaignId);
   const updateFields = this.getNodeParameter('updateFields', index, {}) as UpdateCampaignRequest;
-
-  const campaignId = normalizeCampaignId(rawCampaignId);
 
   const requestBody: UpdateCampaignRequest = {};
   for (const [key, value] of Object.entries(updateFields)) {
@@ -93,24 +93,4 @@ export async function updateCampaign(this: IExecuteFunctions, index: number) {
   const response = await apiRequest.call(this, 'PATCH', `/campaigns/${campaignId}`, requestBody);
 
   return response;
-}
-
-function normalizeCampaignId(id: string | number): string {
-  if (typeof id === 'number') {
-    ensureId(id);
-    return id.toString();
-  }
-
-  const trimmedId = id.trim();
-  if (!trimmedId) {
-    throw new Error('Campaign ID must be provided');
-  }
-
-  if (/^\d+$/.test(trimmedId)) {
-    ensureId(Number(trimmedId));
-  } else {
-    ensureGuid(trimmedId);
-  }
-
-  return trimmedId;
 }

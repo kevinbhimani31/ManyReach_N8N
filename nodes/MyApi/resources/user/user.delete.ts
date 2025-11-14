@@ -1,9 +1,10 @@
 import { IExecuteFunctions } from 'n8n-workflow';
 import { apiRequest } from '../../helpers/apiRequest';
-import { ensureGuid } from '../../helpers/validation';
+import { ensureGuid, extractStringId } from '../../helpers/validation';
 
 export async function deleteUser(this: IExecuteFunctions, index: number) {
-  const id = this.getNodeParameter('userId', index, '') as string;
+  const rawId = this.getNodeParameter('userId', index) as any;
+  const id = extractStringId(rawId, 'User ID');
   ensureGuid(id);
 
   // depending on API semantics, you may do soft-delete or hard-delete

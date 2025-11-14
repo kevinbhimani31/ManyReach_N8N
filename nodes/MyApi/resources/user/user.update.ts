@@ -1,9 +1,10 @@
 import { IExecuteFunctions } from 'n8n-workflow';
 import { apiRequest } from '../../helpers/apiRequest';
-import { ensureGuid } from '../../helpers/validation';
+import { ensureGuid, extractStringId } from '../../helpers/validation';
 
 export async function updateUser(this: IExecuteFunctions, index: number) {
-  const id = this.getNodeParameter('userId', index, '') as string;
+  const rawId = this.getNodeParameter('userId', index) as any;
+  const id = extractStringId(rawId, 'User ID');
   ensureGuid(id);
    const firstName = this.getNodeParameter('FirstName', index) as string;
    const lastName = this.getNodeParameter('LastName', index) as string;
@@ -28,3 +29,11 @@ export interface UpdateUserRequest{
   AccountType?: number;
   Active?: boolean;
 }
+
+export const UpdateUserRoles = [
+  { name: 'User', value: 30, description: 'User' },
+  { name: 'Admin', value: 100, description: 'Admin' },
+  { name: 'Super Admin', value: 110, description: 'Super Admin' },
+  {name : 'Unibox Only' , value: 21, description: 'Unibox Only' },
+  { name: 'Reports Only', value: 22, description: 'Reports Only' },
+];
