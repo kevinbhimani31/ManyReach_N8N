@@ -12,7 +12,6 @@ export function createField(options: {
   resource?: string;
   required?: boolean;
   operations?: string[];
-  required?: boolean;
   optionsList?: { name: string; value: string | number ; description?: string }[];
   placeholder?: string;
   typeOptions?: INodeProperties['typeOptions'];
