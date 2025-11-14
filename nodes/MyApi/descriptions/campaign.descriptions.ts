@@ -89,56 +89,233 @@ export const campaignFields: INodeProperties[] = [
     ],
   }),
 
-  // Create 
-  createField({
-    displayName: 'Campaign Name',
-    name: 'campaignName',
-    type: 'string',
-    description: 'Campaign Name to create a clientspace',
-    resource: 'campaign',
-    operations: ['create'],
-  }),
-  createField({
-    displayName: 'Campaign Description',
-    name: 'campaignDescription',
-    type: 'string',
-    description: 'Campaign Description to create a clientspace',
-    resource: 'campaign',
-    operations: ['create'],
-  }),
-  {
-    displayName: 'Additional Fields',
-    name: 'additionalFields',
-    type: 'collection',
-    placeholder: 'Add Field',
-    default: {},
-    displayOptions: {
-      show: {
-        resource: ['campaign'],  // or your resource
-        operation: ['create'],   // choose your operation
-      },
-    },
-    options: [
-      {
-        displayName: 'CcEmails',
-        name: 'CcEmails',
-        type: 'string',
-        default: "",
-      },
-      {
-        displayName: 'BccEmails',
-        name: 'BccEmails',
-        type: 'string',
-        default: '',
-      },
-      {
-        displayName: 'Daily Limit',
-        name: 'dailyLimit',
-        type: 'number',
-        default: 0,
-      },
-    ],
+  // // Create
+  // createField({
+  //   displayName: 'Campaign Name',
+  //   name: 'campaignName',
+  //   type: 'string',
+  //   description: 'Campaign Name to create a clientspace',
+  //   resource: 'campaign',
+  //   operations: ['create'],
+  // }),
+  // createField({
+  //   displayName: 'Campaign Description',
+  //   name: 'campaignDescription',
+  //   type: 'string',
+  //   description: 'Campaign Description to create a clientspace',
+  //   resource: 'campaign',
+  //   operations: ['create'],
+  // }),
+  // {
+  //   displayName: 'Additional Fields',
+  //   name: 'additionalFields',
+  //   type: 'collection',
+  //   placeholder: 'Add Field',
+  //   default: {},
+  //   displayOptions: {
+  //     show: {
+  //       resource: ['campaign'],  // or your resource
+  //       operation: ['create'],   // choose your operation
+  //     },
+  //   },
+  //   options: [
+  //     {
+  //       displayName: 'CcEmails',
+  //       name: 'CcEmails',
+  //       type: 'string',
+  //       default: "",
+  //     },
+  //     {
+  //       displayName: 'BccEmails',
+  //       name: 'BccEmails',
+  //       type: 'string',
+  //       default: '',
+  //     },
+  //     {
+  //       displayName: 'Daily Limit',
+  //       name: 'dailyLimit',
+  //       type: 'number',
+  //       default: 0,
+  //     },
+  //   ],
+  // },
+
+  // ----------------------------
+// CREATE — MAIN FIELDS
+// ----------------------------
+createField({
+  displayName: 'Campaign Name',
+  name: 'campaignName',
+  type: 'string',
+  description: 'Name of the campaign',
+  resource: 'campaign',
+  operations: ['create'],
+}),
+
+createField({
+  displayName: 'Description',
+  name: 'campaignDescription',
+  type: 'string',
+  description: 'Short description',
+  resource: 'campaign',
+  operations: ['create'],
+}),
+
+createField({
+  displayName: 'From Email',
+  name: 'fromEmail',
+  type: 'string',
+  description: 'Sender email address',
+  resource: 'campaign',
+  operations: ['create'],
+}),
+
+createField({
+  displayName: 'From Name',
+  name: 'fromName',
+  type: 'string',
+  description: 'Sender name',
+  resource: 'campaign',
+  operations: ['create'],
+}),
+
+createField({
+  displayName: 'Subject',
+  name: 'subject',
+  type: 'string',
+  resource: 'campaign',
+  operations: ['create'],
+}),
+
+createField({
+  displayName: 'Body',
+  name: 'body',
+  type: 'string',
+  typeOptions: { rows: 5 },
+  resource: 'campaign',
+  operations: ['create'],
+}),
+
+createField({
+  displayName: 'Timezone',
+  name: 'timezone',
+  type: 'string',
+  default: 'UTC',
+  resource: 'campaign',
+  operations: ['create'],
+}),
+{
+  displayName: 'Days to Send',
+  name: 'daysOfWeek',
+  type: 'multiOptions',
+  default: ['mon','tue','wed','thu','fri','sat','sun'],   // <-- all selected
+  displayOptions: { show: { resource: ['campaign'], operation: ['create'] }},
+  options: [
+    { name: 'Monday', value: 'mon' },
+    { name: 'Tuesday', value: 'tue' },
+    { name: 'Wednesday', value: 'wed' },
+    { name: 'Thursday', value: 'thu' },
+    { name: 'Friday', value: 'fri' },
+    { name: 'Saturday', value: 'sat' },
+    { name: 'Sunday', value: 'sun' },
+  ],
+},
+createField({
+  displayName: 'Daily Limit Increase Percent',
+  name: 'dailyLimitIncreasePercent',
+  type: 'number',
+  default: 1,
+  resource: 'campaign',
+  operations: ['create'],
+}),
+{
+  displayName: 'Additional Fields',
+  name: 'additionalFields',
+  type: 'collection',
+  default: {},
+  placeholder: 'Add Optional Field',
+  displayOptions: {
+    show: { resource: ['campaign'], operation: ['create'] },
   },
+  options: [
+  { displayName: 'CC Emails', name: 'ccEmails', type: 'string', default: '' },
+  { displayName: 'BCC Emails', name: 'bccEmails', type: 'string', default: '' },
+  { displayName: 'Reply To Email', name: 'replyToEmail', type: 'string', default: '' },
+  { displayName: 'Reply CC Emails', name: 'replyCcEmails', type: 'string', default: '' },
+  { displayName: 'Reply BCC Emails', name: 'replyBccEmails', type: 'string', default: '' },
+
+  // ------------------------
+  // DAILY LIMIT SECTION
+  // ------------------------
+  { displayName: 'Daily Limit', name: 'dailyLimit', type: 'number', default: 10000 },
+  { displayName: 'Daily Limit Per', name: 'dailyLimitPer', type: 'string', default: '' },
+  { displayName: 'Daily Limit Increase', name: 'dailyLimitIncrease', type: 'boolean', default: true },
+  { displayName: 'Daily Limit Increase To Max', name: 'dailyLimitIncreaseToMax', type: 'number', default: 10000 },
+  { displayName: 'Daily Limit On Date', name: 'dailyLimitOnDate', type: 'string', default: '' },
+  { displayName: 'Daily Limit Prioritize', name: 'dailyLimitPrioritize', type: 'string', default: '' },
+  { displayName: 'Daily Limit Initial', name: 'dailyLimitInitial', type: 'number', default: 10000 },
+  { displayName: 'Daily Limit Initial Enabled', name: 'dailyLimitInitialEnabled', type: 'boolean', default: true },
+  { displayName: 'Daily Limit Which Emails Count', name: 'dailyLimitWhichEmailsCount', type: 'string', default: '' },
+
+  // ------------------------
+  // BOOLEAN FLAGS
+  // ------------------------
+  { displayName: 'Send Unsubscribe List Header', name: 'sendUnsubscribeListHeader', type: 'boolean', default: true },
+  { displayName: 'Deactivate If Missing Placeholder', name: 'deactivateIfMissingPlaceholder', type: 'boolean', default: true },
+  { displayName: 'Stop Coworkers On Reply', name: 'stopCoworkersOnReply', type: 'boolean', default: true },
+  { displayName: 'Text Only Emails', name: 'textOnlyEmails', type: 'boolean', default: true },
+  { displayName: 'Track Opens', name: 'trackOpens', type: 'boolean', default: true },
+  { displayName: 'Track Clicks', name: 'trackClicks', type: 'boolean', default: true },
+
+  // ------------------------
+  // ESP LIMIT FIELDS
+  // ------------------------
+  { displayName: 'ESP Match Type', name: 'espMatchType', type: 'number', default: 2 },
+  { displayName: 'ESP Match Enabled', name: 'espMatchEnabled', type: 'boolean', default: true },
+  { displayName: 'ESP Limit Enabled', name: 'espLimitEnabled', type: 'boolean', default: true },
+  { displayName: 'ESP Limit To Microsoft', name: 'espLimitToMicrosoft', type: 'boolean', default: true },
+  { displayName: 'ESP Limit To Google', name: 'espLimitToGoogle', type: 'boolean', default: true },
+  { displayName: 'ESP Limit To Other', name: 'espLimitToOther', type: 'boolean', default: true },
+
+  // ------------------------
+  // SCHEDULE SETTINGS
+  // ------------------------
+  { displayName: 'Schedule Sending Enabled', name: 'scheduleSending', type: 'boolean', default: true },
+  { displayName: 'Schedule Time Zone', name: 'scheduleTimeZone', type: 'string', default: '' },
+  { displayName: 'Schedule Send On Date', name: 'scheduleSendOnDate', type: 'string', default: '' },
+  { displayName: 'Schedule Send On Date Minutes', name: 'scheduleSendOnDateMinutes', type: 'number', default: 1439 },
+  { displayName: 'Schedule Send On Date Enabled', name: 'scheduleSendOnDateEnabled', type: 'boolean', default: true },
+  { displayName: 'Schedule Send On Date Hours', name: 'scheduleSendOnDateHours', type: 'number', default: 23 },
+
+  // Delay
+  { displayName: 'Delay Min Minutes', name: 'delayMinMinutes', type: 'number', default: 1440 },
+
+  // ------------------------
+  // WEEKDAY TIME WINDOWS (defaults copied from Swagger)
+  // ------------------------
+  { displayName: 'Monday: After (minutes)', name: 'sendMonAfter', type: 'number', default: 1439 },
+  { displayName: 'Monday: Before (minutes)', name: 'sendMonBefore', type: 'number', default: 1439 },
+
+  { displayName: 'Tuesday: After (minutes)', name: 'sendTueAfter', type: 'number', default: 1439 },
+  { displayName: 'Tuesday: Before (minutes)', name: 'sendTueBefore', type: 'number', default: 1439 },
+
+  { displayName: 'Wednesday: After (minutes)', name: 'sendWedAfter', type: 'number', default: 1439 },
+  { displayName: 'Wednesday: Before (minutes)', name: 'sendWedBefore', type: 'number', default: 1439 },
+
+  { displayName: 'Thursday: After (minutes)', name: 'sendThuAfter', type: 'number', default: 1439 },
+  { displayName: 'Thursday: Before (minutes)', name: 'sendThuBefore', type: 'number', default: 1439 },
+
+  { displayName: 'Friday: After (minutes)', name: 'sendFriAfter', type: 'number', default: 1439 },
+  { displayName: 'Friday: Before (minutes)', name: 'sendFriBefore', type: 'number', default: 1439 },
+
+  { displayName: 'Saturday: After (minutes)', name: 'sendSatAfter', type: 'number', default: 1439 },
+  { displayName: 'Saturday: Before (minutes)', name: 'sendSatBefore', type: 'number', default: 1439 },
+
+  { displayName: 'Sunday: After (minutes)', name: 'sendSunAfter', type: 'number', default: 1439 },
+  { displayName: 'Sunday: Before (minutes)', name: 'sendSunBefore', type: 'number', default: 1439 },
+]
+},
+
 
   {
     displayName: 'Update Fields',
