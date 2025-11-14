@@ -12,6 +12,8 @@ export const clientspaceOperations: INodeProperties[] = [
       { name: 'Get All', value: 'getAll' },
       { name: 'Get By ID', value: 'getById' },
       { name: 'Create', value: 'create' },
+      { name: 'Update', value: 'update' },
+      { name: 'Delete', value: 'delete' },
     ],
   }),
 ];
@@ -52,7 +54,7 @@ export const clientspaceFields: INodeProperties[] = [
     type: 'resourceLocator',
     description: 'Select a clientspace from the list or enter its ID',
     resource: 'clientspace',
-    operations: ['getById'],
+    operations: ['getById', 'update', 'delete'],
     modes: [
       {
         displayName: 'From list',
@@ -90,7 +92,7 @@ export const clientspaceFields: INodeProperties[] = [
     type: 'string',
     description: 'Title for creating or updating a clientspace',
     resource: 'clientspace',
-    operations: ['create'],
+    operations: ['create', 'update'],
   }),
 
   createField({

@@ -74,7 +74,7 @@ export const campaignFields: INodeProperties[] = [
       {
         displayName: 'By ID',
         name: 'id',
-        type: 'string',
+        type: 'string', 
         placeholder: 'Enter campaign ID',
         validation: [
           {

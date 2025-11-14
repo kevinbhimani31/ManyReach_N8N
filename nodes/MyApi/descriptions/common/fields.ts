@@ -6,10 +6,11 @@ import { INodeProperties } from 'n8n-workflow';
 export function createField(options: {
   displayName: string;
   name: string;
-  type: 'string' | 'number' | 'boolean' | 'json' | 'options' | 'resourceLocator';
+  type: 'string' | 'number' | 'boolean' | 'json' | 'options' | 'resourceLocator' | 'multiOptions';
   default?: any;
   description?: string;
   resource?: string;
+  required?: boolean;
   operations?: string[];
   optionsList?: { name: string; value: string | number ; description?: string }[];
   placeholder?: string;
@@ -39,7 +40,9 @@ export function createField(options: {
   if (options.type === 'resourceLocator' && options.modes) {
     field.modes = options.modes;
   }
-
+  if( options.required) {
+    field.required = options.required;
+  }
   // Add dynamic displayOptions
   if (options.resource && options.operations) {
     field.displayOptions = {
