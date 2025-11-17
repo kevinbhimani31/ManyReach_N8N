@@ -1,0 +1,63 @@
+{
+  "nodeName": "myApi",
+  "nodeDisplayName" : "ManyReach",
+  "nodeDescription" : "Interact with ManyReach API",
+  "resources": [
+    {
+      "name": "Workspace",
+      "value": "workspace",
+      "displayName": "Workspace",
+      "endpoint": "/workspaces",
+      "idType": "number",
+      "hasLoadOptions": true,
+      "hasListSearch": true,
+      "operations": [
+        {
+          "name": "Get All",
+          "value": "getAll",
+          "endpoint": "/workspaces",
+          "method": "GET",
+          "hasPagination": true
+        },
+        {
+          "name": "Get By ID",
+          "value": "getById",
+          "endpoint": "/workspaces/{id}",
+          "method": "GET"
+        },
+        {
+          "name": "Create",
+          "value": "create",
+          "endpoint": "/workspaces",
+          "method": "POST",
+          "fields": [
+            {
+              "displayName": "Workspace Title",
+              "name": "workspaceTitle",
+              "type": "string",
+              "description": "Title of the workspace",
+              "required": true
+            }
+          ]
+        },
+        {
+          "name": "Update",
+          "value": "update",
+          "endpoint": "/workspaces/{id}",
+          "method": "PATCH",
+          "hasUpdateFields": true,
+          "fields": [
+            {
+              "displayName": "Workspace Title",
+              "name": "workspaceTitle",
+              "type": "string",
+              "description": "Title of the workspace",
+              "required": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

@@ -16,6 +16,7 @@ export function createField(options: {
   placeholder?: string;
   typeOptions?: INodeProperties['typeOptions'];
   modes?: INodeProperties['modes'];
+  options?: INodeProperties['options']; // we implement options 
 }): INodeProperties 
 
 {
@@ -43,6 +44,11 @@ export function createField(options: {
   if( options.required) {
     field.required = options.required;
   }
+  
+  if( options.options) {
+    field.options = options.options;
+  }
+
   // Add dynamic displayOptions
   if (options.resource && options.operations) {
     field.displayOptions = {
@@ -51,6 +57,7 @@ export function createField(options: {
         operation: options.operations,
       },
     };
+ 
   } else if (options.resource) {
     field.displayOptions = {
       show: { resource: [options.resource] },

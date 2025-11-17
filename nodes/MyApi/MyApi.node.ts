@@ -11,6 +11,7 @@ import { clientspaceOperations, clientspaceFields } from './descriptions/clients
 import { prospectOperations, prospectFields } from './descriptions/prospect.descriptions';
 import { listOperations, listFields } from './descriptions/list.descriptions';
 import { campaignOperations, campaignFields } from './descriptions/campaign.descriptions';
+import { workspaceOperations, workspaceFields } from './descriptions/workspace.descriptions';
 
 // Import API handlers
 import { getAllUsers } from './resources/user/user.getAll';
@@ -39,6 +40,12 @@ import { getCampaignById } from './resources/campaign/campaign.getById';
 import { createCampaign } from './resources/campaign/campaign.create';
 import { updateCampaign } from './resources/campaign/campaign.update';
 import { deleteCampaign } from './resources/campaign/campaign.delete';
+
+import { getAllWorkspaces } from './resources/workspace/workspace.getAll';
+import { getWorkspaceById } from './resources/workspace/workspace.getById';
+import { createWorkspace } from './resources/workspace/workspace.create';
+import { updateWorkspace } from './resources/workspace/workspace.update';
+import { loadWorkspacesForDropdown, searchWorkspacesForResourceLocator } from './resources/workspace/load/workspace.load';
 
 // Error handling
 import { handleExecutionError } from './helpers/errorHandler';
@@ -80,6 +87,7 @@ export class MyApi implements INodeType {
           { name: 'Prospect', value: 'prospect' },
           { name: 'List', value: 'list' },
           { name: 'Client Space', value: 'clientspace' },
+          { name: 'Workspace', value: 'workspace' },
         ],
       },
 
@@ -99,6 +107,9 @@ export class MyApi implements INodeType {
       ...clientspaceOperations,
       ...clientspaceFields,
 
+      ...workspaceOperations,
+      ...workspaceFields,
+
     ],
   };
 
@@ -112,11 +123,13 @@ export class MyApi implements INodeType {
       getCampaigns: loadCampaignsForDropdown,
       getUsers: loadUsersForDropdown,
       getClientspaces: loadClientspacesForDropdown,
+      getWorkspaces: loadWorkspacesForDropdown,
     },
     listSearch: {
       searchCampaigns: searchCampaignsForResourceLocator,
       searchUsers: searchUsersForResourceLocator,
       searchClientspaces: searchClientspacesForResourceLocator,
+      searchWorkspaces: searchWorkspacesForResourceLocator,
     },
   };
 
@@ -233,6 +246,30 @@ export class MyApi implements INodeType {
               break;
             default:
               throw new Error(`Operation "${operation}" not supported for Campaign`);
+          }
+        }
+
+        // WORKSPACE RESOURCE
+        else if (resource === 'workspace') {
+          switch (operation) {
+            case 'getAll':
+              data = await getAllWorkspaces.call(this, i);
+              break;
+
+            case 'getById':
+              data = await getWorkspaceById.call(this, i);
+              break;
+
+            case 'create':
+              data = await createWorkspace.call(this, i);
+              break;
+
+            case 'update':
+              data = await updateWorkspace.call(this, i);
+              break;
+
+            default:
+              throw new Error(`Operation "${operation}" not supported for Workspace`);
           }
         }
 
