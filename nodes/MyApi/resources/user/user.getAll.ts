@@ -18,12 +18,5 @@ export async function getAllUsers(this: IExecuteFunctions, index: number) {
   const response = await apiRequest.call(this, 'GET', `/users`, {}, { page, limit });
 
   // common mapping: keep API response shape
-  return {
-    items: response?.data ?? response ?? [],
-    pagination: {
-      page,
-      limit,
-      total: response?.total ?? null,
-    },
-  };
+  return response; 
 }

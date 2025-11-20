@@ -24,9 +24,32 @@
           "value": "getById",
           "endpoint": "/workspaces/{id}",
           "method": "GET"
+        },
+        {
+          "name": "Create",
+          "value": "create",
+          "endpoint": "/workspaces",
+          "method": "POST",
+          "fields": [
+            {
+              "displayName": "Workspace Title",
+              "name": "workspaceTitle",
+              "apiName": "Title",
+              "type": "string",
+              "description": "Title of the workspace",
+              "required": true,
+              "operations": ["create"]
+            }
+          ]
+        },
+        {
+          "name": "Update",
+          "value": "update",
+          "endpoint": "/workspaces/{id}",
+          "method": "PATCH",
+          "hasUpdateFields": true
         }
       ]
     }
   ]
 }
-

@@ -1,18 +1,15 @@
 #!/usr/bin/env ts-node
 /**
- * IMPROVED N8N Node Generator - Bug-Free Version
+ * IMPROVED N8N Node Generator
  * 
- * Key Improvements to Reduce Bugs:
- * 1. Configuration validation before generation
- * 2. Proper type handling using helper functions
- * 3. Correct import paths (auto-calculated)
- * 4. Field name mapping support (apiName)
- * 5. Duplicate field detection
- * 6. Proper helper function usage
- * 7. Better error handling
- * 8. Automatic validation imports
- * 9. String trimming
- * 10. Type-safe code generation
+ * Improvements:
+ * - Proper type handling for resource locators
+ * - Correct import paths
+ * - Configuration validation
+ * - Field name mapping support
+ * - Better error handling
+ * - Duplicate field detection
+ * - Proper helper function usage
  */
 
 import * as fs from 'fs';
@@ -57,8 +54,6 @@ interface ResourceConfig {
   idType?: 'string' | 'number' | 'guid';
   hasLoadOptions?: boolean;
   hasListSearch?: boolean;
-  nameField?: string; // Field to use for display name (e.g., "Email", "Name", "Title")
-  valueField?: string; // Field to use for value (e.g., "Id", "ID", "userId")
   operations: OperationConfig[];
 }
 
@@ -69,48 +64,35 @@ interface GeneratorConfig {
   resources: ResourceConfig[];
 }
 
-// ============================================
-// VALIDATION - Prevents invalid configs
-// ============================================
+// Validation
 function validateConfig(config: GeneratorConfig): string[] {
   const errors: string[] = [];
 
   if (!config.nodeName) errors.push('nodeName is required');
-  if (!config.nodeDisplayName) errors.push('nodeDisplayName is required');
   if (!config.resources || config.resources.length === 0) {
     errors.push('At least one resource is required');
   }
 
   config.resources?.forEach((resource, rIdx) => {
-    if (!resource.name) errors.push(`Resource ${rIdx + 1}: name is required`);
-    if (!resource.value) errors.push(`Resource ${rIdx + 1}: value is required`);
-    if (!resource.displayName) errors.push(`Resource ${rIdx + 1}: displayName is required`);
-    if (!resource.endpoint) errors.push(`Resource ${rIdx + 1}: endpoint is required`);
+    if (!resource.name) errors.push(`Resource ${rIdx}: name is required`);
+    if (!resource.value) errors.push(`Resource ${rIdx}: value is required`);
+    if (!resource.endpoint) errors.push(`Resource ${rIdx}: endpoint is required`);
     if (!resource.operations || resource.operations.length === 0) {
-      errors.push(`Resource ${rIdx + 1}: At least one operation is required`);
+      errors.push(`Resource ${rIdx}: At least one operation is required`);
     }
 
     resource.operations?.forEach((op, oIdx) => {
-      if (!op.name) errors.push(`Resource ${rIdx + 1}, Operation ${oIdx + 1}: name is required`);
-      if (!op.value) errors.push(`Resource ${rIdx + 1}, Operation ${oIdx + 1}: value is required`);
-      if (!op.endpoint) errors.push(`Resource ${rIdx + 1}, Operation ${oIdx + 1}: endpoint is required`);
-      if (!op.method) errors.push(`Resource ${rIdx + 1}, Operation ${oIdx + 1}: method is required`);
-      
-      // Validate field names
-      op.fields?.forEach((field, fIdx) => {
-        if (!field.name) errors.push(`Resource ${rIdx + 1}, Operation ${oIdx + 1}, Field ${fIdx + 1}: name is required`);
-        if (!field.displayName) errors.push(`Resource ${rIdx + 1}, Operation ${oIdx + 1}, Field ${fIdx + 1}: displayName is required`);
-        if (!field.type) errors.push(`Resource ${rIdx + 1}, Operation ${oIdx + 1}, Field ${fIdx + 1}: type is required`);
-      });
+      if (!op.name) errors.push(`Resource ${rIdx}, Operation ${oIdx}: name is required`);
+      if (!op.value) errors.push(`Resource ${rIdx}, Operation ${oIdx}: value is required`);
+      if (!op.endpoint) errors.push(`Resource ${rIdx}, Operation ${oIdx}: endpoint is required`);
+      if (!op.method) errors.push(`Resource ${rIdx}, Operation ${oIdx}: method is required`);
     });
   });
 
   return errors;
 }
 
-// ============================================
-// HELPER FUNCTIONS
-// ============================================
+// Helper functions
 function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -141,9 +123,7 @@ function getValidationHelper(idType?: string): { extract: string; ensure: string
   return { extract: 'extractStringId', ensure: '' };
 }
 
-// ============================================
-// GENERATE DESCRIPTION FILE
-// ============================================
+// Generate description file with duplicate detection
 function generateDescriptionFile(resource: ResourceConfig, outputDir: string): void {
   const resourceName = resource.value;
   const ResourceName = capitalize(resourceName);
@@ -254,19 +234,17 @@ function generateDescriptionFile(resource: ResourceConfig, outputDir: string): v
   }
   
   // Track seen fields to avoid duplicates
-  const seenFields = new Map<string, number>();
+  const seenFields = new Set<string>();
   
   // Operation-specific fields
   resource.operations.forEach(op => {
     if (op.fields && op.fields.length > 0) {
       op.fields.forEach(field => {
-        const fieldKey = field.operations ? `${field.name}-${field.operations.join(',')}` : field.name;
-        const count = seenFields.get(fieldKey) || 0;
-        seenFields.set(fieldKey, count + 1);
-        
-        if (count > 0 && !field.operations) {
-          console.warn(`⚠️  Warning: Field "${field.name}" appears multiple times. Consider using 'operations' array to scope it.`);
+        const fieldKey = `${field.name}-${op.value}`;
+        if (seenFields.has(field.name) && !field.operations) {
+          console.warn(`⚠️  Warning: Duplicate field "${field.name}" detected. Consider using 'operations' to scope it.`);
         }
+        seenFields.add(fieldKey);
         
         content += `  createField({\n`;
         content += `    displayName: '${field.displayName}',\n`;
@@ -302,9 +280,6 @@ function generateDescriptionFile(resource: ResourceConfig, outputDir: string): v
         if (field.loadOptionsMethod) {
           content += `    typeOptions: {\n`;
           content += `      loadOptionsMethod: '${field.loadOptionsMethod}',\n`;
-          if (field.typeOptions?.customValue) {
-            content += `      customValue: true,\n`;
-          }
           content += `    },\n`;
         }
         content += `    resource: '${resourceName}',\n`;
@@ -357,9 +332,7 @@ function generateDescriptionFile(resource: ResourceConfig, outputDir: string): v
   console.log(`✓ Generated: ${filePath}`);
 }
 
-// ============================================
-// GENERATE OPERATION FILE
-// ============================================
+// Generate operation file with proper type handling
 function generateOperationFile(
   resource: ResourceConfig,
   operation: OperationConfig,
@@ -373,12 +346,10 @@ function generateOperationFile(
   content += `import { apiRequest } from '../../helpers/apiRequest';\n`;
   
   const needsValidation = ['getById', 'update', 'delete'].includes(operation.value);
-  const needsPagination = operation.hasPagination;
-  
-  if (needsPagination || needsValidation) {
+  if (operation.hasPagination || needsValidation) {
     content += `import { `;
     const imports: string[] = [];
-    if (needsPagination) imports.push('ensurePagination');
+    if (operation.hasPagination) imports.push('ensurePagination');
     if (needsValidation) {
       const validation = getValidationHelper(resource.idType);
       if (validation.extract) imports.push(validation.extract);
@@ -399,14 +370,14 @@ function generateOperationFile(
   content += `export async function ${functionName}(this: IExecuteFunctions, index: number) {\n`;
   
   // Parameter extraction
-  if (needsPagination) {
+  if (operation.hasPagination) {
     content += `  const page = this.getNodeParameter('page', index, 1) as number;\n`;
     content += `  const limit = this.getNodeParameter('limit', index, 100) as number;\n`;
     content += `  const startingAfter = this.getNodeParameter('startingAfter', index, 0) as number;\n`;
     content += `  ensurePagination(page, limit);\n`;
   }
   
-  if (needsValidation) {
+  if (['getById', 'update', 'delete'].includes(operation.value)) {
     const validation = getValidationHelper(resource.idType);
     content += `  const rawId = this.getNodeParameter('${resourceName}Id', index) as any;\n`;
     content += `  const id = ${validation.extract}(rawId, '${ResourceName} ID');\n`;
@@ -442,7 +413,7 @@ function generateOperationFile(
     
     if (operation.fields) {
       operation.fields.forEach(field => {
-        const apiFieldName = field.apiName || field.name; // Use apiName if provided
+        const apiFieldName = field.apiName || field.name;
         if (operation.value === 'create' && field.required) {
           if (field.type === 'string') {
             content += `  body.${apiFieldName} = ${field.name}.trim();\n`;
@@ -500,10 +471,6 @@ function generateOperationFile(
       : operation.endpoint;
     content += `  const response = await apiRequest.call(this, '${operation.method}', \`${endpoint}\`, body);\n`;
     content += `\n`;
-    content += `  if (!response) {\n`;
-    content += `    throw new Error('Failed to ${operation.value} ${resourceName}: Empty response from API');\n`;
-    content += `  }\n`;
-    content += `\n`;
     content += `  return response;\n`;
   }
   
@@ -518,9 +485,7 @@ function generateOperationFile(
   console.log(`✓ Generated: ${filePath}`);
 }
 
-// ============================================
-// GENERATE LOAD FILE (with correct paths)
-// ============================================
+// Generate load file with correct import paths
 function generateLoadFile(resource: ResourceConfig, outputDir: string): void {
   if (!resource.hasLoadOptions && !resource.hasListSearch) {
     return;
@@ -534,35 +499,14 @@ function generateLoadFile(resource: ResourceConfig, outputDir: string): void {
   content += `import { apiRequest } from '../../../helpers/apiRequest';\n`;
   content += `import { extractArray } from '../../../helpers/response.convert';\n\n`;
   
-  // Get field names for name and value mapping
-  const nameField = resource.nameField || 'name';
-  const valueField = resource.valueField || 'id';
-  
-  // Generate fallback chain for name field
-  const nameFieldVariations = [
-    nameField,
-    capitalize(nameField),
-    nameField.charAt(0).toUpperCase() + nameField.slice(1)
-  ];
-  const nameFallback = nameFieldVariations.map(f => `${resourceName}.${f}`).join(' ?? ');
-  
-  // Generate fallback chain for value field
-  const valueFieldVariations = [
-    valueField,
-    capitalize(valueField),
-    valueField.charAt(0).toUpperCase() + valueField.slice(1),
-    valueField.toUpperCase()
-  ];
-  const valueFallback = valueFieldVariations.map(f => `${resourceName}.${f}`).join(' ?? ');
-  
   content += `async function fetch${ResourceName}s(\n`;
   content += `  this: ILoadOptionsFunctions,\n`;
   content += `): Promise<INodePropertyOptions[]> {\n`;
-  content += `  const response = await apiRequest.call(this, 'GET', '${resource.endpoint}', {}, { limit: 200 });\n`;
+  content += `  const response = await apiRequest.call(this, 'GET', '${resource.endpoint}', {}, { limit: 50 });\n`;
   content += `  const ${resourceName}s: any[] = extractArray(response, '${resourceName}s');\n`;
   content += `  return ${resourceName}s.map((${resourceName}: any) => ({\n`;
-  content += `    name: ${nameFallback} ?? \`${ResourceName} \${${valueFallback}}\`,\n`;
-  content += `    value: ${valueFallback},\n`;
+  content += `    name: ${resourceName}.name ?? ${resourceName}.Name ?? \`${ResourceName} \${${resourceName}.id ?? ${resourceName}.Id}\`,\n`;
+  content += `    value: ${resourceName}.id ?? ${resourceName}.Id ?? ${resourceName}.ID,\n`;
   content += `  })).filter((option) => option.value !== undefined && option.value !== null && option.value !== '');\n`;
   content += `}\n\n`;
   
@@ -593,16 +537,13 @@ function generateLoadFile(resource: ResourceConfig, outputDir: string): void {
   console.log(`✓ Generated: ${filePath}`);
 }
 
-// ============================================
-// MAIN GENERATOR FUNCTION
-// ============================================
+// Main generator
 function generateNode(config: GeneratorConfig, baseDir: string): void {
-  // Validate config FIRST
+  // Validate config
   const errors = validateConfig(config);
   if (errors.length > 0) {
-    console.error('\n❌ Configuration errors found:');
+    console.error('❌ Configuration errors:');
     errors.forEach(err => console.error(`   - ${err}`));
-    console.error('\nPlease fix these errors before generating files.\n');
     process.exit(1);
   }
   
@@ -616,7 +557,7 @@ function generateNode(config: GeneratorConfig, baseDir: string): void {
   console.log('Generating n8n node files...\n');
   
   config.resources.forEach(resource => {
-    console.log(`\n📦 Generating files for resource: ${resource.displayName}`);
+    console.log(`\nGenerating files for resource: ${resource.displayName}`);
     
     generateDescriptionFile(resource, nodesDir);
     
@@ -627,8 +568,8 @@ function generateNode(config: GeneratorConfig, baseDir: string): void {
     generateLoadFile(resource, nodesDir);
   });
   
-  console.log('\n✅ Generation complete!');
-  console.log('\n📋 Next steps:');
+  console.log('\n✓ Generation complete!');
+  console.log('\nNext steps:');
   console.log('1. Review the generated files');
   console.log('2. Update MyApi.node.ts to import and register the new resources');
   console.log('3. Customize any complex logic as needed');
@@ -636,28 +577,22 @@ function generateNode(config: GeneratorConfig, baseDir: string): void {
   console.log('5. Test in n8n: npm run dev');
 }
 
-// ============================================
-// MAIN EXECUTION
-// ============================================
+// Read config and generate
 const configPath = process.argv[2] || path.join(__dirname, '../node-generator.config.json');
 
 if (!fs.existsSync(configPath)) {
-  console.error(`\n❌ Error: Configuration file not found: ${configPath}`);
-  console.error('Please create a node-generator.config.json file\n');
+  console.error(`Error: Configuration file not found: ${configPath}`);
+  console.error('Please create a node-generator.config.json file');
   process.exit(1);
 }
 
 try {
-  const configContent = fs.readFileSync(configPath, 'utf-8');
-  const config: GeneratorConfig = JSON.parse(configContent);
+  const config: GeneratorConfig = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
   const baseDir = path.dirname(configPath);
   generateNode(config, baseDir);
 } catch (error: any) {
-  if (error instanceof SyntaxError) {
-    console.error('\n❌ Error: Invalid JSON in configuration file');
-    console.error(`   ${error.message}\n`);
-  } else {
-    console.error('\n❌ Error reading configuration:', error.message);
-  }
+  console.error('Error reading configuration:', error.message);
   process.exit(1);
 }
+
+

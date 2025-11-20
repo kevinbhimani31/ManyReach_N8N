@@ -94,6 +94,7 @@ export const userFields: INodeProperties[] = [
     type: 'string',
     description: 'FirstName for creating or updating a user',
     resource: 'user',
+    required: false,
     operations: ['create', 'update'],
   }),
   createField({
@@ -102,6 +103,7 @@ export const userFields: INodeProperties[] = [
     type: 'string',
     description: 'LastName for creating or updating a user',
     resource: 'user',
+    required: false,
     operations: ['create', 'update'],
   }),
 
@@ -111,6 +113,7 @@ export const userFields: INodeProperties[] = [
     type: 'boolean',
     description: 'boolean for creating or updating a user',
     resource: 'user',
+    required: false,
     operations: ['create', 'update'],
   }),
 
@@ -131,6 +134,7 @@ export const userFields: INodeProperties[] = [
     type: 'options',
     description: 'AccountType for updating a user',
     resource: 'user',
+    required:false,
     operations: ['update'],
     optionsList: UpdateUserRoles,
     default: 'User',

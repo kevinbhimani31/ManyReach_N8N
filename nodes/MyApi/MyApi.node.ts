@@ -11,7 +11,7 @@ import { clientspaceOperations, clientspaceFields } from './descriptions/clients
 import { prospectOperations, prospectFields } from './descriptions/prospect.descriptions';
 import { listOperations, listFields } from './descriptions/list.descriptions';
 import { campaignOperations, campaignFields } from './descriptions/campaign.descriptions';
-import { workspaceOperations, workspaceFields } from './descriptions/workspace.descriptions';
+import { senderOperations , senderFields } from './descriptions/sender.descriptions';
 
 // Import API handlers
 import { getAllUsers } from './resources/user/user.getAll';
@@ -41,14 +41,14 @@ import { createCampaign } from './resources/campaign/campaign.create';
 import { updateCampaign } from './resources/campaign/campaign.update';
 import { deleteCampaign } from './resources/campaign/campaign.delete';
 
-import { getAllWorkspaces } from './resources/workspace/workspace.getAll';
-import { getWorkspaceById } from './resources/workspace/workspace.getById';
-import { createWorkspace } from './resources/workspace/workspace.create';
-import { updateWorkspace } from './resources/workspace/workspace.update';
-import { loadWorkspacesForDropdown, searchWorkspacesForResourceLocator } from './resources/workspace/load/workspace.load';
+import { getAllSenders } from './resources/sender/sender.getAll';
+import { getSenderById } from './resources/sender/sender.getById';
+import { createSender } from './resources/sender/sender.create';  
+import { updateSender } from './resources/sender/sender.update';
 
 // Error handling
 import { handleExecutionError } from './helpers/errorHandler';
+import { searchSendersForResourceLocator } from './resources/sender/load/sender.load';
 
 export class MyApi implements INodeType {
   description: INodeTypeDescription = {
@@ -87,7 +87,7 @@ export class MyApi implements INodeType {
           { name: 'Prospect', value: 'prospect' },
           { name: 'List', value: 'list' },
           { name: 'Client Space', value: 'clientspace' },
-          { name: 'Workspace', value: 'workspace' },
+          { name: 'Sender', value: 'sender' },
         ],
       },
 
@@ -107,9 +107,8 @@ export class MyApi implements INodeType {
       ...clientspaceOperations,
       ...clientspaceFields,
 
-      ...workspaceOperations,
-      ...workspaceFields,
-
+      ...senderOperations,
+      ...senderFields,
     ],
   };
 
@@ -123,13 +122,13 @@ export class MyApi implements INodeType {
       getCampaigns: loadCampaignsForDropdown,
       getUsers: loadUsersForDropdown,
       getClientspaces: loadClientspacesForDropdown,
-      getWorkspaces: loadWorkspacesForDropdown,
+      getSenders: loadClientspacesForDropdown,
     },
     listSearch: {
       searchCampaigns: searchCampaignsForResourceLocator,
       searchUsers: searchUsersForResourceLocator,
       searchClientspaces: searchClientspacesForResourceLocator,
-      searchWorkspaces: searchWorkspacesForResourceLocator,
+      searchSenders: searchSendersForResourceLocator,
     },
   };
 
@@ -249,27 +248,23 @@ export class MyApi implements INodeType {
           }
         }
 
-        // WORKSPACE RESOURCE
-        else if (resource === 'workspace') {
+        // SENDER RESOURCE
+        else if (resource === 'sender') {
           switch (operation) {
             case 'getAll':
-              data = await getAllWorkspaces.call(this, i);
+              data = await getAllSenders.call(this, i);
               break;
-
             case 'getById':
-              data = await getWorkspaceById.call(this, i);
+              data = await getSenderById.call(this, i);
               break;
-
-            case 'create':
-              data = await createWorkspace.call(this, i);
+            case 'create':  
+              data = await createSender.call(this, i);
               break;
-
             case 'update':
-              data = await updateWorkspace.call(this, i);
+              data = await updateSender.call(this, i);
               break;
-
             default:
-              throw new Error(`Operation "${operation}" not supported for Workspace`);
+              throw new Error(`Operation "${operation}" not supported for Sender`);
           }
         }
 

@@ -23,7 +23,8 @@
 		"lint:fix": "n8n-node lint --fix",
 		"release": "n8n-node release",
 		"prepublishOnly": "n8n-node prerelease",
-		"start": "n8n"
+		"start": "n8n",
+		"generate:node": "ts-node scripts/generate-node.ts"
 	},
 	"files": [
 		"dist"
