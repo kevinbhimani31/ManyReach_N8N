@@ -33,6 +33,9 @@ import { deleteClientspace } from './resources/clientspace/clientspace.delete';
 
 // Prospect
 import { createProspect } from './resources/Prospect/prospect.create';
+import { getAllProspects } from './resources/Prospect/prospect.getAll';
+import { bulkAddProspects } from './resources/Prospect/prospect.bulkAdd';
+import { getProspectById } from './resources/Prospect/prospect.getById';
 
 // List controller
 import { loadListsForDropdown } from './resources/list/list.load';
@@ -40,6 +43,8 @@ import { loadCampaignsForDropdown, loadSendersForDropdown, searchCampaignsForRes
 import { loadUsersForDropdown, searchUsersForResourceLocator } from './resources/user/load/user.load';
 import { loadClientspacesForDropdown, searchClientspacesForResourceLocator } from './resources/clientspace/load/clientspace.load';
 import { searchSendersForResourceLocator } from './resources/sender/load/sender.load';
+import { searchProspectsForResourceLocator } from './resources/Prospect/load/prospect.load';
+import { loadProspectsForIdDropdown } from './resources/Prospect/load/prospect.load';
 
 import { getAllLists } from './resources/list/list.getAll';
 
@@ -156,6 +161,7 @@ export class MyApi implements INodeType {
       getUsers: loadUsersForDropdown,
       getClientspaces: loadClientspacesForDropdown,
       getSenders: loadSendersForDropdown,
+      getProspects: loadProspectsForIdDropdown,
     },
     listSearch: {
       searchCampaigns: searchCampaignsForResourceLocator,
@@ -164,6 +170,7 @@ export class MyApi implements INodeType {
       searchSenders: searchSendersForResourceLocator,
       searchTags: searchTagsForResourceLocator,
       searchWorkspaces: searchWorkspacesForResourceLocator,
+      searchProspects: searchProspectsForResourceLocator,
     },
   };
 
@@ -260,10 +267,18 @@ export class MyApi implements INodeType {
         // PROSPECT RESOURCE
         else if (resource === 'prospect') {
           switch (operation) {
+            case 'getAll':
+              data = await getAllProspects.call(this, i);
+              break;
+            case 'bulkAdd':
+              data = await bulkAddProspects.call(this, i);
+              break;
+            case 'getById':
+              data = await getProspectById.call(this, i);
+              break;
             case 'create':
               data = await createProspect.call(this, i);
               break;
-
             default:
               throw new Error(`Operation "${operation}" not supported for Prospect`);
           }
