@@ -38,7 +38,7 @@ import { bulkAddProspects } from './resources/Prospect/prospect.bulkAdd';
 import { getProspectById } from './resources/Prospect/prospect.getById';
 
 // List controller
-import { loadListsForDropdown } from './resources/list/list.load';
+import { loadListsForDropdown, searchListsForResourceLocator } from './resources/list/load/list.load';
 import { loadCampaignsForDropdown, loadSendersForDropdown, searchCampaignsForResourceLocator } from './resources/campaign/load/campaign.load';
 import { loadUsersForDropdown, searchUsersForResourceLocator } from './resources/user/load/user.load';
 import { loadClientspacesForDropdown, searchClientspacesForResourceLocator } from './resources/clientspace/load/clientspace.load';
@@ -47,6 +47,9 @@ import { searchProspectsForResourceLocator } from './resources/Prospect/load/pro
 import { loadProspectsForIdDropdown } from './resources/Prospect/load/prospect.load';
 
 import { getAllLists } from './resources/list/list.getAll';
+import { getListById } from './resources/list/list.getById';
+import { createList } from './resources/list/list.create';
+import { updateList } from './resources/list/list.update';
 
 // Campaigns
 import { getAllCampaigns } from './resources/campaign/campaign.getAll';
@@ -171,6 +174,7 @@ export class MyApi implements INodeType {
       searchTags: searchTagsForResourceLocator,
       searchWorkspaces: searchWorkspacesForResourceLocator,
       searchProspects: searchProspectsForResourceLocator,
+      searchLists: searchListsForResourceLocator,
     },
   };
 
@@ -289,6 +293,18 @@ export class MyApi implements INodeType {
           switch (operation) {
             case 'getAll':
               data = await getAllLists.call(this, i);
+              break;
+
+            case 'getById':
+              data = await getListById.call(this, i);
+              break;
+
+            case 'create':
+              data = await createList.call(this, i);
+              break;
+
+            case 'update':
+              data = await updateList.call(this, i);
               break;
 
             default:
