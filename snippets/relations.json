@@ -1,0 +1,17 @@
+{
+  "enabled": false,
+  "relations": [
+    {
+      "resource": "user",
+      "operation": "getById",
+      "fieldName": "userId",
+      "server": "https://localhost:44398",
+      "listEndpoint": "/users",
+      "itemsPath": "users",
+      "valueKey": "userId",
+      "labelExpr": "(it?.email ?? ((it?.firstName || '') + ' ' + (it?.lastName || '')).trim()) || ('User ' + (it?.userId ?? it?.id ?? ''))"
+    }
+  ]
+}
+
+

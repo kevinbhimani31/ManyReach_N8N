@@ -1,0 +1,7 @@
+{
+  "resource": "tag",
+  "basePath": "/tags",
+  "operations": "create"
+}
+
+

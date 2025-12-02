@@ -15,6 +15,7 @@ import { tagOperations, tagFields } from './descriptions/tag.descriptions';
 import { workspaceOperations, workspaceFields } from './descriptions/workspace.descriptions';
 import { sequenceOperations, sequenceFields } from './descriptions/sequence.descriptions';
 
+import { createTag } from './resources/tag/tag.create';
 // Import API handlers
 
 // Users
@@ -361,7 +362,7 @@ export class MyApi implements INodeType {
               break;
             default:
               throw new Error(`Operation "${operation}" not supported for Tag`);
-          }
+        }
         }
 
         else {
