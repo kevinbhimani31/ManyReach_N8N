@@ -7,9 +7,14 @@ export async function deleteUser(this: IExecuteFunctions, index: number) {
   const id = extractStringId(rawId, 'User ID');
   ensureGuid(id);
 
-  // depending on API semantics, you may do soft-delete or hard-delete
-  const response = await apiRequest.call(this, 'DELETE', `/users/${id}`);
 
-  // If API returns no content, return success body
-  return response ?? { success: true, id };
+
+  const qs: Record<string, any> = {};
+
+
+  const body: Record<string, any> = {};
+
+  const response = await apiRequest.call(this, 'DELETE', `/users/${id}`, body, qs);
+
+  return response;
 }

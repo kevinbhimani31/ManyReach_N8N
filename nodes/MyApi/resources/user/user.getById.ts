@@ -7,11 +7,14 @@ export async function getUserById(this: IExecuteFunctions, index: number) {
   const id = extractStringId(rawId, 'User ID');
   ensureGuid(id);
 
-  const response = await apiRequest.call(this, 'GET', `/users/${id}`);
 
-  if (!response) {
-    throw new Error(`User with ID ${id} not found`);
-  }
+
+  const qs: Record<string, any> = {};
+
+
+  const body: Record<string, any> = {};
+
+  const response = await apiRequest.call(this, 'GET', `/users/${id}`, body, qs);
 
   return response;
 }

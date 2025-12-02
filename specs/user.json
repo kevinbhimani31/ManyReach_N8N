@@ -1,0 +1,187 @@
+{
+  "resource": "user",
+  "basePath": "/users",
+  "idType": "guid",
+  "defaultOperation": "getAll",
+  "operations": {
+    "getAll": {
+      "label": "Get All",
+      "method": "GET",
+      "path": "/users",
+      "qs": [
+        "page:number=1",
+        "limit:number=100"
+      ]
+    },
+    "getById": {
+      "label": "Get By ID",
+      "method": "GET",
+      "path": "/users/{id}",
+      "idParamName": "userId"
+    },
+    "create": {
+      "label": "Create",
+      "method": "POST",
+      "path": "/users",
+      "body": [
+        "Email:string",
+        "FirstName:string",
+        "LastName:string",
+        "Active:boolean=false",
+        "AccountType:number"
+      ]
+    },
+    "update": {
+      "label": "Update",
+      "method": "PUT",
+      "path": "/users/{id}",
+      "idParamName": "userId",
+      "body": [
+        "FirstName:string",
+        "LastName:string",
+        "Active:boolean",
+        "AccountType:number"
+      ]
+    },
+    "delete": {
+      "label": "Delete",
+      "method": "DELETE",
+      "path": "/users/{id}",
+      "idParamName": "userId"
+    }
+  },
+  "fieldsByOperation": {
+    "getAll": [
+      { "displayName": "Page", "name": "page", "type": "number", "default": 1, "description": "Page" },
+      { "displayName": "Limit", "name": "limit", "type": "number", "default": 100 }
+    ],
+    "getById": [
+      {
+        "displayName": "User",
+        "name": "userId",
+        "type": "resourceLocator",
+        "description": "Select a user from the list or enter the user ID (GUID)",
+        "modes": [
+          {
+            "displayName": "From list",
+            "name": "list",
+            "type": "list",
+            "typeOptions": {
+              "searchListMethod": "searchUsers",
+              "searchable": true,
+              "searchFilterRequired": false
+            }
+          },
+          {
+            "displayName": "By ID",
+            "name": "id",
+            "type": "string",
+            "placeholder": "Enter user ID (GUID)",
+            "validation": [
+              {
+                "type": "regex",
+                "properties": {
+                  "regex": "^[0-9a-fA-F]{8}\\\\b-[0-9a-fA-F]{4}\\\\b-[1-5][0-9a-fA-F]{3}\\\\b-[89abAB][0-9a-fA-F]{3}\\\\b-[0-9a-fA-F]{12}$",
+                  "errorMessage": "Enter a valid GUID"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "create": [
+      { "displayName": "Email", "name": "Email", "type": "string", "description": "Email for creating a user", "required": true },
+      { "displayName": "FirstName", "name": "FirstName", "type": "string", "description": "First name" },
+      { "displayName": "LastName", "name": "LastName", "type": "string", "description": "Last name" },
+      { "displayName": "Active", "name": "Active", "type": "boolean", "default": false, "description": "Active status" },
+      {
+        "displayName": "AccountType",
+        "name": "AccountType",
+        "type": "options",
+        "description": "User role",
+        "optionsList": [
+          { "name": "User", "value": 30, "description": "User" },
+          { "name": "Admin", "value": 100, "description": "Admin" },
+          { "name": "Super Admin", "value": 110, "description": "Super Admin" }
+        ],
+        "default": 30
+      }
+    ],
+    "update": [
+      {
+        "displayName": "User",
+        "name": "userId",
+        "type": "resourceLocator",
+        "description": "Select a user or enter the user ID (GUID)",
+        "modes": [
+          {
+            "displayName": "From list",
+            "name": "list",
+            "type": "list",
+            "typeOptions": {
+              "searchListMethod": "searchUsers",
+              "searchable": true,
+              "searchFilterRequired": false
+            }
+          },
+          {
+            "displayName": "By ID",
+            "name": "id",
+            "type": "string",
+            "placeholder": "Enter user ID (GUID)"
+          }
+        ]
+      },
+      { "displayName": "FirstName", "name": "FirstName", "type": "string", "description": "First name" },
+      { "displayName": "LastName", "name": "LastName", "type": "string", "description": "Last name" },
+      { "displayName": "Active", "name": "Active", "type": "boolean", "description": "Active status" },
+      {
+        "displayName": "AccountType",
+        "name": "AccountType",
+        "type": "options",
+        "description": "User role",
+        "optionsList": [
+          { "name": "User", "value": 30, "description": "User" },
+          { "name": "Admin", "value": 100, "description": "Admin" },
+          { "name": "Super Admin", "value": 110, "description": "Super Admin" }
+        ]
+      }
+    ],
+    "delete": [
+      {
+        "displayName": "User",
+        "name": "userId",
+        "type": "resourceLocator",
+        "description": "Select a user or enter the user ID (GUID)",
+        "modes": [
+          {
+            "displayName": "From list",
+            "name": "list",
+            "type": "list",
+            "typeOptions": {
+              "searchListMethod": "searchUsers",
+              "searchable": true,
+              "searchFilterRequired": false
+            }
+          },
+          {
+            "displayName": "By ID",
+            "name": "id",
+            "type": "string",
+            "placeholder": "Enter user ID (GUID)"
+          }
+        ]
+      }
+    ]
+  },
+  "loader": {
+    "resource": "user",
+    "endpoint": "/users",
+    "itemsPath": "users",
+    "value": "userId",
+    "labelExpr": "(it?.Email ?? it?.email ?? ((it?.FirstName || it?.firstName || '') + ' ' + (it?.LastName || it?.lastName || '')).trim()) || ('User ' + (it?.UserId ?? it?.userId ?? ''))"
+  }
+}
+
+
