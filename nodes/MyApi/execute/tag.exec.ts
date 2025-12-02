@@ -3,14 +3,18 @@ import { getAllTags } from '../resources/tag/tag.getAll';
 import { getTagById } from '../resources/tag/tag.getById';
 import { deleteTag } from '../resources/tag/tag.delete';
 
+import { createTag } from '../resources/tag/tag.create';
 export async function executeTag(this: IExecuteFunctions, operation: string, i: number): Promise<any> {
   switch (operation) {
-    case 'getAll':
+case 'getAll':
       return await getAllTags.call(this, i);
     case 'getById':
       return await getTagById.call(this, i);
     case 'delete':
       return await deleteTag.call(this, i);
+    case 'create':
+      return await createTag.call(this, i);
+
     default:
       throw new Error(`Operation "${operation}" not supported for Tag`);
   }

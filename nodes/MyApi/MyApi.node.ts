@@ -15,6 +15,7 @@ import { tagOperations, tagFields } from './descriptions/tag.descriptions';
 import { workspaceOperations, workspaceFields } from './descriptions/workspace.descriptions';
 import { sequenceOperations, sequenceFields } from './descriptions/sequence.descriptions';
 
+import { createTag } from './resources/tag/tag.create';
 // Modular execute handlers
 import { executeUser } from './execute/user.exec';
 import { executeClientspace } from './execute/clientspace.exec';

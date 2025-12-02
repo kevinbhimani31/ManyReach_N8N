@@ -14,6 +14,11 @@ export const tagOperations: INodeProperties[] = [
     default: 'getAll',
     optionsList: [
 
+
+
+
+
+
 { name: 'Get All', value: 'getAll' },
       { name: 'Get By ID', value: 'getById' },
       { name: 'Delete', value: 'delete' },
