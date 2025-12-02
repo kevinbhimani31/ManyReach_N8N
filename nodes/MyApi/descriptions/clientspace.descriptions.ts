@@ -1,5 +1,5 @@
 import { INodeProperties } from 'n8n-workflow';
-import { createField } from '../descriptions/common/fields';
+import { createField } from './common/fields';
 
 export const clientspaceOperations: INodeProperties[] = [
   createField({
@@ -10,16 +10,15 @@ export const clientspaceOperations: INodeProperties[] = [
     default: 'getAll',
     optionsList: [
       { name: 'Get All', value: 'getAll' },
-      { name: 'Get By ID', value: 'getById' },
       { name: 'Create', value: 'create' },
-      { name: 'Update', value: 'update' },
+      { name: 'Get By ID', value: 'getById' },
       { name: 'Delete', value: 'delete' },
+      { name: 'Update', value: 'update' }
     ],
   }),
 ];
 
 export const clientspaceFields: INodeProperties[] = [
-  // Pagination
   createField({
     displayName: 'Page',
     name: 'page',
@@ -38,23 +37,52 @@ export const clientspaceFields: INodeProperties[] = [
     operations: ['getAll'],
   }),
 
-  // Starting After
   createField({
     displayName: 'Starting After',
     name: 'startingAfter',
     type: 'number',
+    default: 0,
+    description: 'Cursor for next page (optional, for cursor-based pagination)',
     resource: 'clientspace',
     operations: ['getAll'],
+    
   }),
 
-  // Clientspace ID
+  createField({
+    displayName: 'Title',
+    name: 'title',
+    type: 'string',
+    default: '',
+    description: 'Display name of the clientspace; maximum 256 characters.',
+    resource: 'clientspace',
+    operations: ['create'],
+    required: true,
+  }),
+
+  {
+    displayName: 'Additional Fields',
+    name: 'additionalFields',
+    type: 'collection',
+    default: {},
+    placeholder: 'Add Field',
+    displayOptions: {
+      show: { resource: ['clientspace'], operation: ['create'] },
+    },
+    options: [
+    { displayName: 'Separate Credits', name: 'separateCredits', type: 'boolean', default: false },
+    { displayName: 'Auto Allocate', name: 'autoAllocate', type: 'boolean', default: false },
+    { displayName: 'Credit Amount', name: 'creditAmount', type: 'number', default: 0 }
+    ],
+  },
+
   createField({
     displayName: 'Clientspace',
     name: 'clientspaceId',
     type: 'resourceLocator',
+    default: { mode: 'list', value: '' },
     description: 'Select a clientspace from the list or enter its ID',
     resource: 'clientspace',
-    operations: ['getById', 'update', 'delete'],
+    operations: ['getById'],
     modes: [
       {
         displayName: 'From list',
@@ -76,7 +104,7 @@ export const clientspaceFields: INodeProperties[] = [
           {
             type: 'regex',
             properties: {
-              regex: '^\\d+$',
+              regex: '^\\\\d+$',
               errorMessage: 'Only numeric IDs are allowed',
             },
           },
@@ -85,41 +113,96 @@ export const clientspaceFields: INodeProperties[] = [
     ],
   }),
 
-  // Body
- createField({
-    displayName: 'Title',
-    name: 'Title',
-    type: 'string',
-    description: 'Title for creating or updating a clientspace',
+  createField({
+    displayName: 'Clientspace',
+    name: 'clientspaceId',
+    type: 'resourceLocator',
+    default: { mode: 'list', value: '' },
+    description: 'Select a clientspace from the list or enter its ID',
     resource: 'clientspace',
-    operations: ['create', 'update'],
+    operations: ['delete'],
+    modes: [
+      {
+        displayName: 'From list',
+        name: 'list',
+        type: 'list',
+        placeholder: 'Select a clientspace...',
+        typeOptions: {
+          searchListMethod: 'searchClientspaces',
+          searchable: true,
+          searchFilterRequired: false,
+        },
+      },
+      {
+        displayName: 'By ID',
+        name: 'id',
+        type: 'string',
+        placeholder: 'Enter clientspace ID',
+        validation: [
+          {
+            type: 'regex',
+            properties: {
+              regex: '^\\\\d+$',
+              errorMessage: 'Only numeric IDs are allowed',
+            },
+          },
+        ],
+      },
+    ],
   }),
 
   createField({
-    displayName: 'SeparateCredits',
-    name: 'SeparateCredits',
-    type: 'boolean',
-    description: 'SeparateCredits for creating or updating a clientspace',
+    displayName: 'Clientspace',
+    name: 'clientspaceId',
+    type: 'resourceLocator',
+    default: { mode: 'list', value: '' },
+    description: 'Select a clientspace from the list or enter its ID',
     resource: 'clientspace',
-    operations: ['create', 'update' , 'getById'],
+    operations: ['update'],
+    modes: [
+      {
+        displayName: 'From list',
+        name: 'list',
+        type: 'list',
+        placeholder: 'Select a clientspace...',
+        typeOptions: {
+          searchListMethod: 'searchClientspaces',
+          searchable: true,
+          searchFilterRequired: false,
+        },
+      },
+      {
+        displayName: 'By ID',
+        name: 'id',
+        type: 'string',
+        placeholder: 'Enter clientspace ID',
+        validation: [
+          {
+            type: 'regex',
+            properties: {
+              regex: '^\\\\d+$',
+              errorMessage: 'Only numeric IDs are allowed',
+            },
+          },
+        ],
+      },
+    ],
   }),
 
-  createField({
-    displayName: 'AutoAllocate',
-    name: 'AutoAllocate',
-    type: 'boolean',
-    description: 'AutoAllocate for creating or updating a clientspace',
-    resource: 'clientspace',
-    operations: ['create', 'update'],
-  }),
-
-  createField({
-    displayName: 'CreditAmount',
-    name: 'CreditAmount',
-    type: 'number',
-    description: 'CreditAmount for creating or updating a clientspace',
-    resource: 'clientspace',
-    operations: ['create', 'update'],
-  }),
-
+  {
+    displayName: 'Update Fields',
+    name: 'updateFields',
+    type: 'collection',
+    default: {},
+    placeholder: 'Add Field',
+    displayOptions: {
+      show: { resource: ['clientspace'], operation: ['update'] },
+    },
+    options: [
+    { displayName: 'Title', name: 'title', type: 'string', default: '' },
+    { displayName: 'Separate Credits', name: 'separateCredits', type: 'boolean', default: false },
+    { displayName: 'Auto Allocate', name: 'autoAllocate', type: 'boolean', default: false },
+    { displayName: 'Credit Amount', name: 'creditAmount', type: 'number', default: 0 }
+    ],
+  }
 ];

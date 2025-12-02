@@ -11,6 +11,8 @@ export const tagOperations: INodeProperties[] = [
     optionsList: [
       { name: 'Get All', value: 'getAll' },
       { name: 'Get By ID', value: 'getById' },
+      { name: 'Create', value: 'create' },
+      { name: 'Update', value: 'update' },
       { name: 'Delete', value: 'delete' },
     ],
   }),
@@ -70,14 +72,14 @@ export const tagFields: INodeProperties[] = [
     optionsList: [{ name: 'Prospect Count', value: 'prospectCount' }],
   }),
 
-  // Get By ID - resource locator
+  // Get By ID and Update - resource locator
   createField({
     displayName: 'Tag',
     name: 'tagId',
     type: 'resourceLocator',
     description: 'Select a tag from the list or enter the tag ID manually',
     resource: 'tag',
-    operations: ['getById', 'delete'],
+    operations: ['getById', 'update', 'delete'],
     modes: [
       {
         displayName: 'From list',
@@ -106,6 +108,32 @@ export const tagFields: INodeProperties[] = [
         ],
       },
     ],
+  }),
+
+  // Create Tag Fields
+  createField({
+    displayName: 'Title',
+    name: 'Title',
+    type: 'string',
+    description: 'Tag name used for organizing and categorizing prospects. Maximum 128 characters.',
+    resource: 'tag',
+    operations: ['create','update'],
+    required: true,
+    typeOptions: {
+      maxLength: 128,
+    },
+  }),
+
+  createField({
+    displayName: 'Description',
+    name: 'Description',
+    type: 'string',
+    description: 'Optional description explaining the purpose or criteria for this tag. Maximum 1,000 characters.',
+    resource: 'tag',
+    operations: ['create','update'],
+    typeOptions: {
+      maxLength: 1000,
+    },
   }),
 
   // Delete options

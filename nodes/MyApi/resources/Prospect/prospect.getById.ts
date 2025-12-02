@@ -1,23 +1,23 @@
 import { IExecuteFunctions } from 'n8n-workflow';
 import { apiRequest } from '../../helpers/apiRequest';
-import { ensureId, extractNumericId } from '../../helpers/validation';
+import { extractResourceId } from '../../helpers/validation';
 
+/**
+ * Get prospect by ID
+ * Retrieves a specific prospect by its ID.
+Supports optional includes via `?include=campaignIds,listIds,tagIds` parameter.
+            
+Behavior:
+- Authenticates API request
+- Validates prospect ID
+- Verifies prospect belongs to authenticated organization
+- Returns prospect details as DTO
+- Include parameter loads related entity IDs in single DB query
+ */
 export async function getProspectById(this: IExecuteFunctions, index: number) {
-  const rawId = this.getNodeParameter('prospectId', index) as any;
-  const id = extractNumericId(rawId, 'Prospect ID');
-  ensureId(id);
-
-  const include = this.getNodeParameter('include', index, []) as string[];
-  const qs: Record<string, any> = {};
-  if (Array.isArray(include) && include.length > 0) qs.include = include.join(',');
-
-  const response = await apiRequest.call(this, 'GET', `/prospects/${id}`, {}, qs);
-
-  if (!response) {
-    throw new Error(`Prospect with ID ${id} not found`);
-  }
-
+  const resourceLocator = this.getNodeParameter('prospectId', index) as any;
+  const id = extractResourceId(resourceLocator);
+  
+  const response = await apiRequest.call(this, 'GET', `/api/v2/prospects/${id}`);
   return response;
 }
-
-

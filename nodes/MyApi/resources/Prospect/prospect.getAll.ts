@@ -3,36 +3,26 @@ import { apiRequest } from '../../helpers/apiRequest';
 import { ensurePagination } from '../../helpers/validation';
 
 /**
- * Get all prospects with optional filters and pagination
+ * Get all prospects
+ * Returns prospects for the authenticated organization with optional filters.
+Supports email-to-ID lookup via `?email=` parameter.
+            
+Behavior:
+- Authenticates API request
+- Applies optional filters (email, status, tags, search)
+- Returns paginated list of prospects as DTOs
+- When email filter is used, returns single prospect (for ID lookup)
  */
 export async function getAllProspects(this: IExecuteFunctions, index: number) {
   const page = this.getNodeParameter('page', index, 1) as number;
   const limit = this.getNodeParameter('limit', index, 100) as number;
-  const startingAfter = this.getNodeParameter('startingAfter', index, 0) as number;
-  const email = this.getNodeParameter('email', index, '') as string;
-  const status = this.getNodeParameter('status', index, '') as string;
-  const tags = this.getNodeParameter('tags', index, '') as string;
-  const search = this.getNodeParameter('search', index, '') as string;
-
+  
   ensurePagination(page, limit);
-
-  const qs: Record<string, any> = { page, limit };
-  if (startingAfter && Number(startingAfter) > 0) qs.startingAfter = startingAfter;
-  if (email) qs.email = email;
-  if (status) qs.status = status;
-  if (tags) qs.tags = tags;
-  if (search) qs.search = search;
-
-  const response = await apiRequest.call(this, 'GET', `/prospects`, {}, qs);
-
+  
+  const response = await apiRequest.call(this, 'GET', '/api/v2/prospects', {}, { page, limit });
+  
   return {
-    items: response?.data ?? response ?? [],
-    pagination: {
-      page,
-      limit,
-      total: response?.total ?? null,
-    },
+    items: response?.data ?? response?.items ?? response ?? [],
+    pagination: { page, limit, total: response?.total ?? null },
   };
 }
-
-

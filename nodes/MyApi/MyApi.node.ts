@@ -5,79 +5,139 @@ import {
   INodeTypeDescription,
 } from 'n8n-workflow';
 
-// Import reusable descriptions
-import { userOperations, userFields } from './descriptions/user.descriptions';
-import { clientspaceOperations, clientspaceFields } from './descriptions/clientspace.descriptions';
-import { prospectOperations, prospectFields } from './descriptions/prospect.descriptions';
-import { listOperations, listFields } from './descriptions/list.descriptions';
+// Campaign descriptions
 import { campaignOperations, campaignFields } from './descriptions/campaign.descriptions';
-import { tagOperations, tagFields } from './descriptions/tag.descriptions';
-import { workspaceOperations, workspaceFields } from './descriptions/workspace.descriptions';
-import { sequenceOperations, sequenceFields } from './descriptions/sequence.descriptions';
 
-// Import API handlers
-
-// Users
-import { getAllUsers } from './resources/user/user.getAll';
-import { getUserById } from './resources/user/user.getById';
-import { createUser } from './resources/user/user.create';
-import { updateUser } from './resources/user/user.update';
-import { deleteUser } from './resources/user/user.delete';
-
-// Clientspaces
-import { getAllClientspaces } from './resources/clientspace/clientspace.getAll';
-import { getClientspaceById } from './resources/clientspace/clientspace.getById';
-import { createClientspace } from './resources/clientspace/clientspace.create';
-import { updateClientspace } from './resources/clientspace/clientspace.update';
-import { deleteClientspace } from './resources/clientspace/clientspace.delete';
-
-// Prospect
-import { createProspect } from './resources/Prospect/prospect.create';
-import { getAllProspects } from './resources/Prospect/prospect.getAll';
-import { bulkAddProspects } from './resources/Prospect/prospect.bulkAdd';
-import { getProspectById } from './resources/Prospect/prospect.getById';
-
-// List controller
-import { loadListsForDropdown, searchListsForResourceLocator } from './resources/list/load/list.load';
-import { loadCampaignsForDropdown, loadSendersForDropdown, searchCampaignsForResourceLocator } from './resources/campaign/load/campaign.load';
-import { loadUsersForDropdown, searchUsersForResourceLocator } from './resources/user/load/user.load';
-import { loadClientspacesForDropdown, searchClientspacesForResourceLocator } from './resources/clientspace/load/clientspace.load';
-import { searchSendersForResourceLocator } from './resources/sender/load/sender.load';
-import { searchProspectsForResourceLocator } from './resources/Prospect/load/prospect.load';
-import { loadProspectsForIdDropdown } from './resources/Prospect/load/prospect.load';
-
-import { getAllLists } from './resources/list/list.getAll';
-import { getListById } from './resources/list/list.getById';
-import { createList } from './resources/list/list.create';
-import { updateList } from './resources/list/list.update';
-
-// Campaigns
+// Campaign operations
+import { copyCampaign } from './resources/campaign/campaign.copy';
+import { createCampaign } from './resources/campaign/campaign.create';
+import { createSequencesCampaign } from './resources/campaign/campaign.createSequences';
+import { deleteCampaign } from './resources/campaign/campaign.delete';
 import { getAllCampaigns } from './resources/campaign/campaign.getAll';
 import { getCampaignById } from './resources/campaign/campaign.getById';
-import { createCampaign } from './resources/campaign/campaign.create';
+import { getSequencesCampaign } from './resources/campaign/campaign.getSequences';
+import { getStatsCampaign } from './resources/campaign/campaign.getStats';
+import { pauseCampaign } from './resources/campaign/campaign.pause';
+import { startCampaign } from './resources/campaign/campaign.start';
 import { updateCampaign } from './resources/campaign/campaign.update';
-import { deleteCampaign } from './resources/campaign/campaign.delete';
+import { loadCampaignsForDropdown, searchCampaignsForResourceLocator } from './resources/campaign/load/campaign.load';
 
-// Sender
+// Clientspace descriptions
+import { clientspaceOperations, clientspaceFields } from './descriptions/clientspace.descriptions';
+
+// Clientspace operations
+import { createClientspace } from './resources/clientspace/clientspace.create';
+import { deleteClientspace } from './resources/clientspace/clientspace.delete';
+import { getAllClientspaces } from './resources/clientspace/clientspace.getAll';
+import { getClientspaceById } from './resources/clientspace/clientspace.getById';
+import { updateClientspace } from './resources/clientspace/clientspace.update';
+import { loadClientspacesForDropdown, searchClientspacesForResourceLocator } from './resources/clientspace/load/clientspace.load';
+
+// Followup descriptions
+import { followupOperations, followupFields } from './descriptions/followup.descriptions';
+
+// Followup operations
+import { deleteFollowup } from './resources/followup/followup.delete';
+import { getFollowupById } from './resources/followup/followup.getById';
+import { updateFollowup } from './resources/followup/followup.update';
+import { loadFollowupsForDropdown, searchFollowupsForResourceLocator } from './resources/followup/load/followup.load';
+
+// List descriptions
+import { listOperations, listFields } from './descriptions/list.descriptions';
+
+// List operations
+import { createList } from './resources/list/list.create';
+import { getAllLists } from './resources/list/list.getAll';
+import { getListById } from './resources/list/list.getById';
+import { updateList } from './resources/list/list.update';
+import { loadListsForDropdown, searchListsForResourceLocator } from './resources/list/load/list.load';
+
+// Message descriptions
+import { messageOperations, messageFields } from './descriptions/message.descriptions';
+
+// Message operations
+import { createMessage } from './resources/message/message.create';
+import { loadMessagesForDropdown, searchMessagesForResourceLocator } from './resources/message/load/message.load';
+
+// Prospect descriptions
+import { prospectOperations, prospectFields } from './descriptions/prospect.descriptions';
+
+// Prospect operations
+import { createProspect } from './resources/prospect/prospect.create';
+import { createTagsProspect } from './resources/prospect/prospect.createTags';
+import { deleteProspect } from './resources/prospect/prospect.delete';
+import { getAllProspects } from './resources/prospect/prospect.getAll';
+import { getProspectById } from './resources/prospect/prospect.getById';
+import { getMessagesProspect } from './resources/prospect/prospect.getMessages';
+import { getTagsProspect } from './resources/prospect/prospect.getTags';
+import { updateProspect } from './resources/prospect/prospect.update';
+import { loadProspectsForDropdown, searchProspectsForResourceLocator } from './resources/prospect/load/prospect.load';
+
+// Sender descriptions
+import { senderOperations, senderFields } from './descriptions/sender.descriptions';
+
+// Sender operations
+import { createSender } from './resources/sender/sender.create';
+import { deleteSender } from './resources/sender/sender.delete';
 import { getAllSenders } from './resources/sender/sender.getAll';
 import { getSenderById } from './resources/sender/sender.getById';
-import { deleteSender } from './resources/sender/sender.delete';
-// Tags
-import { getAllTags } from './resources/tag/tag.getAll';
-import { getTagById } from './resources/tag/tag.getById';
-import { searchTagsForResourceLocator } from './resources/tag/load/tag.load';
-import { deleteTag } from './resources/tag/tag.delete';
-// Workspaces
+import { getErrorsSender } from './resources/sender/sender.getErrors';
+import { updateSender } from './resources/sender/sender.update';
+import { loadSendersForDropdown, searchSendersForResourceLocator } from './resources/sender/load/sender.load';
+
+// Sequence descriptions
+import { sequenceOperations, sequenceFields } from './descriptions/sequence.descriptions';
+
+// Sequence operations
+import { createFollowupsSequence } from './resources/sequence/sequence.createFollowups';
+import { deleteSequence } from './resources/sequence/sequence.delete';
+import { getFollowupsSequence } from './resources/sequence/sequence.getFollowups';
+import { updateSequence } from './resources/sequence/sequence.update';
+import { loadSequencesForDropdown, searchSequencesForResourceLocator } from './resources/sequence/load/sequence.load';
+
+// Tags descriptions
+import { tagsOperations, tagsFields } from './descriptions/tags.descriptions';
+
+// Tags operations
+import { createTags } from './resources/tags/tags.create';
+import { deleteTags } from './resources/tags/tags.delete';
+import { getAllTagss } from './resources/tags/tags.getAll';
+import { getTagsById } from './resources/tags/tags.getById';
+import { getProspectsTags } from './resources/tags/tags.getProspects';
+import { updateTags } from './resources/tags/tags.update';
+import { loadTagssForDropdown, searchTagssForResourceLocator } from './resources/tags/load/tags.load';
+
+// User descriptions
+import { userOperations, userFields } from './descriptions/user.descriptions';
+
+// User operations
+import { createUser } from './resources/user/user.create';
+import { deleteUser } from './resources/user/user.delete';
+import { getAllUsers } from './resources/user/user.getAll';
+import { getUserById } from './resources/user/user.getById';
+import { updateUser } from './resources/user/user.update';
+import { loadUsersForDropdown, searchUsersForResourceLocator } from './resources/user/load/user.load';
+
+// Whitelabel descriptions
+import { whitelabelOperations, whitelabelFields } from './descriptions/whitelabel.descriptions';
+
+// Whitelabel operations
+import { updateWhitelabel } from './resources/whitelabel/whitelabel.update';
+import { loadWhitelabelsForDropdown, searchWhitelabelsForResourceLocator } from './resources/whitelabel/load/whitelabel.load';
+
+// Workspace descriptions
+import { workspaceOperations, workspaceFields } from './descriptions/workspace.descriptions';
+
+// Workspace operations
+import { createWorkspace } from './resources/workspace/workspace.create';
+import { deleteWorkspace } from './resources/workspace/workspace.delete';
 import { getAllWorkspaces } from './resources/workspace/workspace.getAll';
 import { getWorkspaceById } from './resources/workspace/workspace.getById';
-import { searchWorkspacesForResourceLocator } from './resources/workspace/load/workspace.load';
-import { deleteWorkspace } from './resources/workspace/workspace.delete';
-// Sequences
-import { getAllSequences } from './resources/sequence/sequence.getAll';
+import { updateWorkspace } from './resources/workspace/workspace.update';
+import { loadWorkspacesForDropdown, searchWorkspacesForResourceLocator } from './resources/workspace/load/workspace.load';
 
-// Error handling
+
 import { handleExecutionError } from './helpers/errorHandler';
-import { senderFields, senderOperations } from './descriptions/sender.descriptions';
 
 export class MyApi implements INodeType {
   description: INodeTypeDescription = {
@@ -104,83 +164,95 @@ export class MyApi implements INodeType {
     ],
 
     properties: [
-      // Resource Selector
       {
         displayName: 'Resource',
         name: 'resource',
         type: 'options',
-        default: 'user',
+        default: 'campaign',
         options: [
-          { name: 'User', value: 'user' },
           { name: 'Campaign', value: 'campaign' },
-          { name: 'Prospect', value: 'prospect' },
+          { name: 'Clientspace', value: 'clientspace' },
+          { name: 'Followup', value: 'followup' },
           { name: 'List', value: 'list' },
-          { name: 'Client Space', value: 'clientspace' },
-          { name: 'Sender' , value: 'sender'},
-          { name: 'Tag', value: 'tag' },
-          { name: 'Workspace', value: 'workspace' },
+          { name: 'Message', value: 'message' },
+          { name: 'Prospect', value: 'prospect' },
+          { name: 'Sender', value: 'sender' },
           { name: 'Sequence', value: 'sequence' },
+          { name: 'Tags', value: 'tags' },
+          { name: 'User', value: 'user' },
+          { name: 'Whitelabel', value: 'whitelabel' },
+          { name: 'Workspace', value: 'workspace' }
         ],
       },
 
-      // Injected dynamic description files
-      ...userOperations,
-      ...userFields,
-
       ...campaignOperations,
       ...campaignFields,
-      
-      ...prospectOperations,
-      ...prospectFields,
-      
-      ...listOperations,
-      ...listFields,
 
       ...clientspaceOperations,
       ...clientspaceFields,
 
+      ...followupOperations,
+      ...followupFields,
+
+      ...listOperations,
+      ...listFields,
+
+      ...messageOperations,
+      ...messageFields,
+
+      ...prospectOperations,
+      ...prospectFields,
+
       ...senderOperations,
       ...senderFields,
 
-      ...tagOperations,
-      ...tagFields,
+      ...sequenceOperations,
+      ...sequenceFields,
+
+      ...tagsOperations,
+      ...tagsFields,
+
+      ...userOperations,
+      ...userFields,
+
+      ...whitelabelOperations,
+      ...whitelabelFields,
 
       ...workspaceOperations,
-      ...workspaceFields,
-
-      ...sequenceOperations,
-      ...sequenceFields
+      ...workspaceFields
     ],
   };
 
-  // ----------------------------
-  // Load Options Methods
-  // ----------------------------
-
   methods = {
     loadOptions: {
-      getLists: loadListsForDropdown,
       getCampaigns: loadCampaignsForDropdown,
-      getUsers: loadUsersForDropdown,
       getClientspaces: loadClientspacesForDropdown,
+      getFollowups: loadFollowupsForDropdown,
+      getLists: loadListsForDropdown,
+      getMessages: loadMessagesForDropdown,
+      getProspects: loadProspectsForDropdown,
       getSenders: loadSendersForDropdown,
-      getProspects: loadProspectsForIdDropdown,
+      getSequences: loadSequencesForDropdown,
+      getTagss: loadTagssForDropdown,
+      getUsers: loadUsersForDropdown,
+      getWhitelabels: loadWhitelabelsForDropdown,
+      getWorkspaces: loadWorkspacesForDropdown
     },
     listSearch: {
       searchCampaigns: searchCampaignsForResourceLocator,
-      searchUsers: searchUsersForResourceLocator,
       searchClientspaces: searchClientspacesForResourceLocator,
-      searchSenders: searchSendersForResourceLocator,
-      searchTags: searchTagsForResourceLocator,
-      searchWorkspaces: searchWorkspacesForResourceLocator,
-      searchProspects: searchProspectsForResourceLocator,
+      searchFollowups: searchFollowupsForResourceLocator,
       searchLists: searchListsForResourceLocator,
+      searchMessages: searchMessagesForResourceLocator,
+      searchProspects: searchProspectsForResourceLocator,
+      searchSenders: searchSendersForResourceLocator,
+      searchSequences: searchSequencesForResourceLocator,
+      searchTagss: searchTagssForResourceLocator,
+      searchUsers: searchUsersForResourceLocator,
+      searchWhitelabels: searchWhitelabelsForResourceLocator,
+      searchWorkspaces: searchWorkspacesForResourceLocator
     },
   };
-
-  // ----------------------------
-  // Main execute handler
-  // ----------------------------
 
   async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
     const items = this.getInputData();
@@ -193,116 +265,95 @@ export class MyApi implements INodeType {
       try {
         let data;
 
-        // USER RESOURCE
-        if (resource === 'user') {
+        if (resource === 'campaign') {
           switch (operation) {
-            case 'getAll':
-              data = await getAllUsers.call(this, i);
+            case 'copy':
+              data = await copyCampaign.call(this, i);
               break;
-
-            case 'getById':
-              data = await getUserById.call(this, i);
-              break;
-
             case 'create':
-              data = await createUser.call(this, i);
+              data = await createCampaign.call(this, i);
               break;
-
-            case 'update':
-              data = await updateUser.call(this, i);
+            case 'createSequences':
+              data = await createSequencesCampaign.call(this, i);
               break;
-
             case 'delete':
-              data = await deleteUser.call(this, i);
+              data = await deleteCampaign.call(this, i);
               break;
-
-            default:
-              throw new Error(`Operation "${operation}" not supported for User`);
-          }
-        } else if (resource === 'workspace') {
-          switch (operation) {
             case 'getAll':
-              data = await getAllWorkspaces.call(this, i);
+              data = await getAllCampaigns.call(this, i);
               break;
             case 'getById':
-              data = await getWorkspaceById.call(this, i);
+              data = await getCampaignById.call(this, i);
               break;
-            case 'delete':
-              data = await deleteWorkspace.call(this, i);
+            case 'getSequences':
+              data = await getSequencesCampaign.call(this, i);
               break;
+            case 'getStats':
+              data = await getStatsCampaign.call(this, i);
+              break;
+            case 'pause':
+              data = await pauseCampaign.call(this, i);
+              break;
+            case 'start':
+              data = await startCampaign.call(this, i);
+              break;
+            case 'update':
+              data = await updateCampaign.call(this, i);
+              break;
+
             default:
-              throw new Error(`Operation "${operation}" not supported for Workspace`);
-          }
-        } else if (resource === 'sequence') {
-          switch (operation) {
-            case 'getAll':
-              data = await getAllSequences.call(this, i);
-              break;
-            default:
-              throw new Error(`Operation "${operation}" not supported for Sequence`);
+              throw new Error(`Operation "${operation}" not supported for Campaign`);
           }
         }
-
-        // CLIENTSPACE RESOURCE
         else if (resource === 'clientspace') {
           switch (operation) {
-            case 'getAll':
-              data = await getAllClientspaces.call(this, i);
-              break;
-
-            case 'getById':
-              data = await getClientspaceById.call(this, i);
-              break;
-
             case 'create':
               data = await createClientspace.call(this, i);
-              break;
-            case 'update':
-              data = await updateClientspace.call(this, i);
               break;
             case 'delete':
               data = await deleteClientspace.call(this, i);
               break;
+            case 'getAll':
+              data = await getAllClientspaces.call(this, i);
+              break;
+            case 'getById':
+              data = await getClientspaceById.call(this, i);
+              break;
+            case 'update':
+              data = await updateClientspace.call(this, i);
+              break;
+
             default:
               throw new Error(`Operation "${operation}" not supported for Clientspace`);
           }
         }
-
-        // PROSPECT RESOURCE
-        else if (resource === 'prospect') {
+        else if (resource === 'followup') {
           switch (operation) {
-            case 'getAll':
-              data = await getAllProspects.call(this, i);
-              break;
-            case 'bulkAdd':
-              data = await bulkAddProspects.call(this, i);
+            case 'delete':
+              data = await deleteFollowup.call(this, i);
               break;
             case 'getById':
-              data = await getProspectById.call(this, i);
+              data = await getFollowupById.call(this, i);
               break;
-            case 'create':
-              data = await createProspect.call(this, i);
+            case 'update':
+              data = await updateFollowup.call(this, i);
               break;
+
             default:
-              throw new Error(`Operation "${operation}" not supported for Prospect`);
+              throw new Error(`Operation "${operation}" not supported for Followup`);
           }
         }
-
-        // LIST RESOURCE
         else if (resource === 'list') {
           switch (operation) {
-            case 'getAll':
-              data = await getAllLists.call(this, i);
-              break;
-
-            case 'getById':
-              data = await getListById.call(this, i);
-              break;
-
             case 'create':
               data = await createList.call(this, i);
               break;
-
+            case 'getAll':
+              data = await getAllLists.call(this, i);
+              break;
+            case 'getById':
+              data = await getListById.call(this, i);
+              break;
             case 'update':
               data = await updateList.call(this, i);
               break;
@@ -311,59 +362,170 @@ export class MyApi implements INodeType {
               throw new Error(`Operation "${operation}" not supported for List`);
           }
         }
-
-        // CAMPAIGN RESOURCE
-        else if (resource === 'campaign') {
+        else if (resource === 'message') {
           switch (operation) {
-            case 'getAll':
-              data = await getAllCampaigns.call(this, i);
+            case 'create':
+              data = await createMessage.call(this, i);
               break;
 
-            case 'getById':
-              data = await getCampaignById.call(this, i);
-              break;
+            default:
+              throw new Error(`Operation "${operation}" not supported for Message`);
+          }
+        }
+        else if (resource === 'prospect') {
+          switch (operation) {
             case 'create':
-              data = await createCampaign.call(this, i);
+              data = await createProspect.call(this, i);
               break;
-            case 'update':
-              data = await updateCampaign.call(this, i);
+            case 'createTags':
+              data = await createTagsProspect.call(this, i);
               break;
             case 'delete':
-              data = await deleteCampaign.call(this, i);
+              data = await deleteProspect.call(this, i);
               break;
+            case 'getAll':
+              data = await getAllProspects.call(this, i);
+              break;
+            case 'getById':
+              data = await getProspectById.call(this, i);
+              break;
+            case 'getMessages':
+              data = await getMessagesProspect.call(this, i);
+              break;
+            case 'getTags':
+              data = await getTagsProspect.call(this, i);
+              break;
+            case 'update':
+              data = await updateProspect.call(this, i);
+              break;
+
             default:
-              throw new Error(`Operation "${operation}" not supported for Campaign`);
+              throw new Error(`Operation "${operation}" not supported for Prospect`);
           }
-        }else if(resource === 'sender'){
+        }
+        else if (resource === 'sender') {
           switch (operation) {
+            case 'create':
+              data = await createSender.call(this, i);
+              break;
+            case 'delete':
+              data = await deleteSender.call(this, i);
+              break;
             case 'getAll':
               data = await getAllSenders.call(this, i);
               break;
             case 'getById':
               data = await getSenderById.call(this, i);
               break;
-            case 'delete':
-              data = await deleteSender.call(this, i);
+            case 'getErrors':
+              data = await getErrorsSender.call(this, i);
               break;
+            case 'update':
+              data = await updateSender.call(this, i);
+              break;
+
             default:
               throw new Error(`Operation "${operation}" not supported for Sender`);
           }
-        } else if (resource === 'tag') {
+        }
+        else if (resource === 'sequence') {
           switch (operation) {
-            case 'getAll':
-              data = await getAllTags.call(this, i);
-              break;
-            case 'getById':
-              data = await getTagById.call(this, i);
+            case 'createFollowups':
+              data = await createFollowupsSequence.call(this, i);
               break;
             case 'delete':
-              data = await deleteTag.call(this, i);
+              data = await deleteSequence.call(this, i);
               break;
+            case 'getFollowups':
+              data = await getFollowupsSequence.call(this, i);
+              break;
+            case 'update':
+              data = await updateSequence.call(this, i);
+              break;
+
             default:
-              throw new Error(`Operation "${operation}" not supported for Tag`);
+              throw new Error(`Operation "${operation}" not supported for Sequence`);
           }
         }
+        else if (resource === 'tags') {
+          switch (operation) {
+            case 'create':
+              data = await createTags.call(this, i);
+              break;
+            case 'delete':
+              data = await deleteTags.call(this, i);
+              break;
+            case 'getAll':
+              data = await getAllTagss.call(this, i);
+              break;
+            case 'getById':
+              data = await getTagsById.call(this, i);
+              break;
+            case 'getProspects':
+              data = await getProspectsTags.call(this, i);
+              break;
+            case 'update':
+              data = await updateTags.call(this, i);
+              break;
 
+            default:
+              throw new Error(`Operation "${operation}" not supported for Tags`);
+          }
+        }
+        else if (resource === 'user') {
+          switch (operation) {
+            case 'create':
+              data = await createUser.call(this, i);
+              break;
+            case 'delete':
+              data = await deleteUser.call(this, i);
+              break;
+            case 'getAll':
+              data = await getAllUsers.call(this, i);
+              break;
+            case 'getById':
+              data = await getUserById.call(this, i);
+              break;
+            case 'update':
+              data = await updateUser.call(this, i);
+              break;
+
+            default:
+              throw new Error(`Operation "${operation}" not supported for User`);
+          }
+        }
+        else if (resource === 'whitelabel') {
+          switch (operation) {
+            case 'update':
+              data = await updateWhitelabel.call(this, i);
+              break;
+
+            default:
+              throw new Error(`Operation "${operation}" not supported for Whitelabel`);
+          }
+        }
+        else if (resource === 'workspace') {
+          switch (operation) {
+            case 'create':
+              data = await createWorkspace.call(this, i);
+              break;
+            case 'delete':
+              data = await deleteWorkspace.call(this, i);
+              break;
+            case 'getAll':
+              data = await getAllWorkspaces.call(this, i);
+              break;
+            case 'getById':
+              data = await getWorkspaceById.call(this, i);
+              break;
+            case 'update':
+              data = await updateWorkspace.call(this, i);
+              break;
+
+            default:
+              throw new Error(`Operation "${operation}" not supported for Workspace`);
+          }
+        }
         else {
           throw new Error(`Resource "${resource}" not supported`);
         }

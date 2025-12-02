@@ -1,59 +1,79 @@
-export function ensureGuid(value: string | undefined) {
-  if (!value) {
-    throw new Error('ID must be provided');
+/**
+ * Helper function to extract resource ID from resource locator
+ */
+export function extractResourceId(resourceLocator: any): string | number {
+  if (typeof resourceLocator === 'string' || typeof resourceLocator === 'number') {
+    return resourceLocator;
   }
-  // simple GUID check
-  const guidRegex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[1-5][0-9a-fA-F]{3}\b-[89abAB][0-9a-fA-F]{3}\b-[0-9a-fA-F]{12}$/;
-  if (!guidRegex.test(value)) {
-    throw new Error('ID must be a valid GUID');
+
+  if (resourceLocator && typeof resourceLocator === 'object') {
+    return resourceLocator.value || resourceLocator.id;
+  }
+
+  throw new Error('Invalid resource locator format');
+}
+
+/**
+ * Extract numeric ID from resource locator
+ */
+export function extractNumericId(resourceLocator: any): number {
+  const id = extractResourceId(resourceLocator);
+  const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+
+  if (isNaN(numericId)) {
+    throw new Error(`Invalid numeric ID: ${id}`);
+  }
+
+  return numericId;
+}
+
+/**
+ * Ensure ID is valid
+ */
+export function ensureId(id: any): void {
+  if (!id || (typeof id === 'string' && id.trim() === '')) {
+    throw new Error('ID is required');
   }
 }
 
-export function ensurePagination(page: number, limit: number) {
-  if (!Number.isInteger(page) || page < 1) {
-    throw new Error('Page must be an integer greater than or equal to 1');
+/**
+ * Validate pagination parameters
+ */
+export function ensurePagination(page: number, limit: number): void {
+  if (page < 1) {
+    throw new Error('Page must be greater than 0');
   }
-  if (!Number.isInteger(limit) || limit < 1) {
-    throw new Error('Limit must be an integer greater than 0');
-  }
-}
 
-export function ensureId(id: number) {
-  if (id === undefined || id === null || isNaN(id) || id <= 0) {
-    throw new Error(`Invalid ID received: ${id}. Please provide a valid numeric ID.`);
+  if (limit < 1 || limit > 1000) {
+    throw new Error('Limit must be between 1 and 1000');
   }
 }
 
-type ResourceLocatorInput = number | string | { value?: number | string | null } | null | undefined;
-
-export function extractNumericId(value: ResourceLocatorInput, fieldLabel: string): number {
-  if (value && typeof value === 'object' && 'value' in value) {
-    return extractNumericId(value.value as ResourceLocatorInput, fieldLabel);
+/**
+ * Validate required field
+ */
+export function validateRequired(value: any, fieldName: string): void {
+  if (value === undefined || value === null || value === '') {
+    throw new Error(`${fieldName} is required`);
   }
-
-  const numericValue = typeof value === 'number' ? value : Number(value);
-
-  if (!Number.isFinite(numericValue)) {
-    throw new Error(`${fieldLabel} must be a numeric ID.`);
-  }
-
-  return numericValue;
 }
 
-export function extractStringId(value: ResourceLocatorInput, fieldLabel: string): string {
-  if (value && typeof value === 'object' && 'value' in value) {
-    return extractStringId(value.value as ResourceLocatorInput, fieldLabel);
+/**
+ * Validate email format
+ */
+export function validateEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+/**
+ * Validate URL format
+ */
+export function validateUrl(url: string): boolean {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
   }
-
-  if (value === undefined || value === null) {
-    throw new Error(`${fieldLabel} is required.`);
-  }
-
-  const stringValue = String(value).trim();
-
-  if (!stringValue) {
-    throw new Error(`${fieldLabel} must not be empty.`);
-  }
-
-  return stringValue;
 }

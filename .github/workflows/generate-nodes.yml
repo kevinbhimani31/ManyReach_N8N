@@ -1,0 +1,86 @@
+name: Generate n8n Nodes
+
+on:
+  push:
+    paths:
+      - 'src/**/*.cs'
+      - 'Controllers/**/*.cs'
+  workflow_dispatch:
+    inputs:
+      force_regenerate:
+        description: 'Force regeneration even if no changes detected'
+        required: false
+        default: 'false'
+
+jobs:
+  generate-nodes:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout n8n nodes repository
+        uses: actions/checkout@v3
+        with:
+          repository: your-org/n8n-nodes-myapi
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: n8n-nodes
+      
+      - name: Checkout API repository
+        uses: actions/checkout@v3
+        with:
+          repository: your-org/your-dotnet-api
+          path: api
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '4.7.2'
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Build .NET API
+        run: |
+          cd api
+          msbuild YourApi.sln /p:Configuration=Release
+      
+      - name: Start API Server
+        run: |
+          cd api/bin/Release
+          Start-Process -FilePath "YourApi.exe" -PassThru
+          Start-Sleep -Seconds 15
+        shell: powershell
+      
+      - name: Install n8n node dependencies
+        run: |
+          cd n8n-nodes
+          npm install
+      
+      - name: Fetch Swagger JSON
+        run: |
+          cd n8n-nodes
+          curl https://localhost:44398/Swagger/Docs/v2 -o cache/swagger-latest.json
+        shell: bash
+      
+      - name: Generate Nodes
+        run: |
+          cd n8n-nodes
+          npm run generate
+        env:
+          SWAGGER_URL: https://localhost:44398/Swagger/Docs/v2
+      
+      - name: Build n8n nodes
+        run: |
+          cd n8n-nodes
+          npm run build
+      
+      - name: Commit generated files
+        run: |
+          cd n8n-nodes
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add nodes/ tools/cache/
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto-generate n8n nodes from API changes"
+          git push
+        shell: bash

@@ -1,5 +1,5 @@
 import { INodeProperties } from 'n8n-workflow';
-import { createField } from '../descriptions/common/fields';
+import { createField } from './common/fields';
 
 export const listOperations: INodeProperties[] = [
   createField({
@@ -10,15 +10,14 @@ export const listOperations: INodeProperties[] = [
     default: 'getAll',
     optionsList: [
       { name: 'Get All', value: 'getAll' },
-      { name: 'Get By ID', value: 'getById' },
       { name: 'Create', value: 'create' },
-      { name: 'Update', value: 'update' },
+      { name: 'Get By ID', value: 'getById' },
+      { name: 'Update', value: 'update' }
     ],
   }),
 ];
 
 export const listFields: INodeProperties[] = [
-  // Pagination
   createField({
     displayName: 'Page',
     name: 'page',
@@ -27,7 +26,8 @@ export const listFields: INodeProperties[] = [
     resource: 'list',
     operations: ['getAll'],
   }),
-   createField({
+
+  createField({
     displayName: 'Limit',
     name: 'limit',
     type: 'number',
@@ -36,24 +36,50 @@ export const listFields: INodeProperties[] = [
     operations: ['getAll'],
   }),
 
-  // Starting After
   createField({
     displayName: 'Starting After',
     name: 'startingAfter',
     type: 'number',
+    default: 0,
+    description: 'Cursor for next page (optional, for cursor-based pagination)',
     resource: 'list',
     operations: ['getAll'],
+    
   }),
 
-  // Get By ID and Update - resource locator
+  createField({
+    displayName: 'Title',
+    name: 'title',
+    type: 'string',
+    default: '',
+    description: 'Display name of the mailing list; maximum 256 characters.',
+    resource: 'list',
+    operations: ['create'],
+    required: true,
+  }),
+
+  {
+    displayName: 'Additional Fields',
+    name: 'additionalFields',
+    type: 'collection',
+    default: {},
+    placeholder: 'Add Field',
+    displayOptions: {
+      show: { resource: ['list'], operation: ['create'] },
+    },
+    options: [
+    { displayName: 'Folder Id', name: 'folderId', type: 'number', default: 0 }
+    ],
+  },
+
   createField({
     displayName: 'List',
     name: 'listId',
     type: 'resourceLocator',
-    description: 'Select a list from the list or enter the list ID manually',
+    default: { mode: 'list', value: '' },
+    description: 'Select a list from the list or enter its ID',
     resource: 'list',
-    operations: ['getById', 'update'],
-    required: true,
+    operations: ['getById'],
     modes: [
       {
         displayName: 'From list',
@@ -70,13 +96,13 @@ export const listFields: INodeProperties[] = [
         displayName: 'By ID',
         name: 'id',
         type: 'string',
-        placeholder: 'Enter list ID (number)',
+        placeholder: 'Enter list ID',
         validation: [
           {
             type: 'regex',
             properties: {
-              regex: '^[0-9]+$',
-              errorMessage: 'Enter a valid numeric ID',
+              regex: '^\\\\d+$',
+              errorMessage: 'Only numeric IDs are allowed',
             },
           },
         ],
@@ -84,45 +110,56 @@ export const listFields: INodeProperties[] = [
     ],
   }),
 
-  // Create List Fields
   createField({
-    displayName: 'Title',
-    name: 'Title',
-    type: 'string',
-    description: 'Title of the list',
-    resource: 'list',
-    operations: ['create'],
-    required: true,
-  }),
-
-  createField({
-    displayName: 'Folder ID',
-    name: 'FolderId',
-    type: 'number',
-    description: 'Optional folder ID to organize the list. Leave empty or set to 0 if not using folders.',
-    resource: 'list',
-    operations: ['create'],
-    default: 0,
-  }),
-
-  // Update List Fields
-  createField({
-    displayName: 'Title',
-    name: 'Title',
-    type: 'string',
-    description: 'Title of the list',
+    displayName: 'List',
+    name: 'listId',
+    type: 'resourceLocator',
+    default: { mode: 'list', value: '' },
+    description: 'Select a list from the list or enter its ID',
     resource: 'list',
     operations: ['update'],
-    required: true,
+    modes: [
+      {
+        displayName: 'From list',
+        name: 'list',
+        type: 'list',
+        placeholder: 'Select a list...',
+        typeOptions: {
+          searchListMethod: 'searchLists',
+          searchable: true,
+          searchFilterRequired: false,
+        },
+      },
+      {
+        displayName: 'By ID',
+        name: 'id',
+        type: 'string',
+        placeholder: 'Enter list ID',
+        validation: [
+          {
+            type: 'regex',
+            properties: {
+              regex: '^\\\\d+$',
+              errorMessage: 'Only numeric IDs are allowed',
+            },
+          },
+        ],
+      },
+    ],
   }),
 
-  createField({
-    displayName: 'Folder ID',
-    name: 'FolderId',
-    type: 'number',
-    description: 'Optional folder ID to organize the list. Leave empty or set to 0 if not using folders.',
-    resource: 'list',
-    operations: ['update'],
-    default: 0,
-  }),
+  {
+    displayName: 'Update Fields',
+    name: 'updateFields',
+    type: 'collection',
+    default: {},
+    placeholder: 'Add Field',
+    displayOptions: {
+      show: { resource: ['list'], operation: ['update'] },
+    },
+    options: [
+    { displayName: 'Folder Id', name: 'folderId', type: 'number', default: 0 },
+    { displayName: 'Title', name: 'title', type: 'string', default: '' }
+    ],
+  }
 ];

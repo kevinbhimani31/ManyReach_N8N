@@ -1,39 +1,24 @@
 import { IExecuteFunctions } from 'n8n-workflow';
 import { apiRequest } from '../../helpers/apiRequest';
-import { ensureGuid, extractStringId } from '../../helpers/validation';
+import { extractResourceId } from '../../helpers/validation';
 
+/**
+ * Update user
+ * Updates one or more fields of an existing user for the authenticated organization.
+
+Behavior:
+- Authenticates API/org context and permissions.
+- Validates non-empty GUID and patch body.
+- Checks canAdminOrg security on user.
+- Applies/updates non-null user fields, including permissions, name, subscription.
+- Persists and returns updated fields or errors.
+ */
 export async function updateUser(this: IExecuteFunctions, index: number) {
-  const rawId = this.getNodeParameter('userId', index) as any;
-  const id = extractStringId(rawId, 'User ID');
-  ensureGuid(id);
-   const firstName = this.getNodeParameter('FirstName', index) as string;
-   const lastName = this.getNodeParameter('LastName', index) as string;
-   const AccountType = this.getNodeParameter('AccountType', index) as number;
-   const Active = this.getNodeParameter('Active', index) as boolean;
- 
-   const request: UpdateUserRequest = {
-     FirstName: firstName,
-     LastName: lastName,
-     Active: Active,
-     AccountType: AccountType,
-   };
-
-  const response = await apiRequest.call(this, 'PATCH', `/users/${id}`, request);
-
+  const resourceLocator = this.getNodeParameter('userId', index) as any;
+  const id = extractResourceId(resourceLocator);
+  
+  const updateFields = this.getNodeParameter('updateFields', index, {}) as any;
+  
+  const response = await apiRequest.call(this, 'PUT', `/api/v2/users/${id}`, updateFields);
   return response;
 }
-
-export interface UpdateUserRequest{
-  FirstName?: string;
-  LastName?: string;
-  AccountType?: number;
-  Active?: boolean;
-}
-
-export const UpdateUserRoles = [
-  { name: 'User', value: 30, description: 'User' },
-  { name: 'Admin', value: 100, description: 'Admin' },
-  { name: 'Super Admin', value: 110, description: 'Super Admin' },
-  {name : 'Unibox Only' , value: 21, description: 'Unibox Only' },
-  { name: 'Reports Only', value: 22, description: 'Reports Only' },
-];

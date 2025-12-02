@@ -1,19 +1,21 @@
 import { IExecuteFunctions } from 'n8n-workflow';
 import { apiRequest } from '../../helpers/apiRequest';
-import { ensureId, extractNumericId } from '../../helpers/validation';
+import { extractResourceId } from '../../helpers/validation';
 
+/**
+ * Get sender by ID
+ * Retrieves detailed info for a sender by unique sender ID.
+
+Behavior:
+- Authenticates request.
+- Validates sender ID.
+- Checks sender belongs to the organization.
+- Returns sender DTO or error if not found.
+ */
 export async function getSenderById(this: IExecuteFunctions, index: number) {
-  const rawId = this.getNodeParameter('senderId', index) as any;
-  const id = extractNumericId(rawId, 'Sender ID');
-  ensureId(id);
-
-  const response = await apiRequest.call(this, 'GET', `/senders/${id}`);
-
-  if (!response) {
-    throw new Error(`Sender with ID ${id} not found`);
-  }
-
+  const resourceLocator = this.getNodeParameter('senderId', index) as any;
+  const id = extractResourceId(resourceLocator);
+  
+  const response = await apiRequest.call(this, 'GET', `/api/v2/senders/${id}`);
   return response;
 }
-
-

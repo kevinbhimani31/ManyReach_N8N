@@ -1,39 +1,34 @@
-import { ILoadOptionsFunctions,INodePropertyOptions,} from 'n8n-workflow';
-import { loadDropdown, searchResourceLocator } from '../../../helpers/searchHelper';
+import { ILoadOptionsFunctions } from 'n8n-workflow';
 import { apiRequest } from '../../../helpers/apiRequest';
-import { extractArray } from '../../../helpers/response.convert';
 
-async function fetchUsers
-(
-  this: ILoadOptionsFunctions,
-): Promise<INodePropertyOptions[]> 
-
-{
-  const response = await apiRequest.call(this, 'GET', '/users', {}, { limit: 200 });
-
-  let users: any[] = extractArray (response, 'users');
-
-  return users.map((user: any) => ({
-    name: user.Email ?? user.email ?? `User ${user.UserId ?? user.userId}`,
-    value: user.UserId ?? user.userId ?? user.userid,
-  })).filter((option) => option.value !== undefined && option.value !== null && option.value !== '');
+/**
+ * Load users for dropdown
+ */
+export async function loadUsersForDropdown(this: ILoadOptionsFunctions) {
+  const response = await apiRequest.call(this, 'GET', '/api/v2/users');
+  const items = response?.data ?? response?.items ?? response ?? [];
   
+  return items.map((item: any) => ({
+    name: item.name || item.title || `User #${item.id}`,
+    value: item.id,
+  }));
 }
 
-export async function loadUsersForDropdown
-(
+/**
+ * Search users for resource locator
+ */
+export async function searchUsersForResourceLocator(
   this: ILoadOptionsFunctions,
-) 
-{
-  return loadDropdown.call(this, fetchUsers);
+  filter?: string
+) {
+  const response = await apiRequest.call(this, 'GET', '/api/v2/users', {}, { search: filter });
+  const items = response?.data ?? response?.items ?? response ?? [];
+  
+  return {
+    results: items.map((item: any) => ({
+      name: item.name || item.title || `User #${item.id}`,
+      value: item.id,
+      url: `/api/v2/users/${item.id}`,
+    })),
+  };
 }
-
-export async function searchUsersForResourceLocator
-(
-  this: ILoadOptionsFunctions,
-  filter?: string,
-) 
-{
-  return searchResourceLocator.call(this, fetchUsers, filter);
-}
-

@@ -1,0 +1,37 @@
+{
+    "swagger": {
+        "url": "https://localhost:44398/Swagger/Docs/v2",
+        "outputPath": "./cache/swagger-current.json"
+    },
+    "generator": {
+        "outputDir": "./",
+        "preserveCustomLogic": true,
+        "customLogicMarkers": {
+            "start": "// CUSTOM_LOGIC_START",
+            "end": "// CUSTOM_LOGIC_END"
+        }
+    },
+    "resources": {
+        "exclude": [
+            "internal",
+            "debug"
+        ],
+        "rename": {
+            "clientspace": "Client Space"
+        }
+    },
+    "operations": {
+        "methodMapping": {
+            "GET": "getAll",
+            "GET/{id}": "getById",
+            "POST": "create",
+            "PUT": "update",
+            "PATCH": "update",
+            "DELETE": "delete"
+        }
+    },
+    "validation": {
+        "requireDescriptions": false,
+        "requireExamples": false
+    }
+}

@@ -1,15 +1,21 @@
 import { IExecuteFunctions } from 'n8n-workflow';
 import { apiRequest } from '../../helpers/apiRequest';
-import { ensureId, extractNumericId } from '../../helpers/validation';
+import { extractResourceId } from '../../helpers/validation';
 
+/**
+ * Delete clientspace
+ * Deletes a clientspace under the authenticated parent organization (agency).
+
+Behavior:
+- Authenticates via API key
+- Only parent org/agency can delete clientspaces
+- Requires Super Admin permissions
+- Removes organization from agency cache
+ */
 export async function deleteClientspace(this: IExecuteFunctions, index: number) {
-  const rawId = this.getNodeParameter('clientspaceId', index) as any;
-  const id = extractNumericId(rawId, 'Clientspace ID');
-  ensureId(id);
-
-  // depending on API semantics, you may do soft-delete or hard-delete
-  const response = await apiRequest.call(this, 'DELETE', `/clientspaces/${id}`);
-
-  // If API returns no content, return success body
-  return response ?? { success: true, id };
+  const resourceLocator = this.getNodeParameter('clientspaceId', index) as any;
+  const id = extractResourceId(resourceLocator);
+  
+  const response = await apiRequest.call(this, 'DELETE', `/api/v2/clientspaces/${id}`);
+  return response;
 }

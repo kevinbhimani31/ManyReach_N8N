@@ -1,7 +1,5 @@
 import { INodeProperties } from 'n8n-workflow';
-import { createField } from '../descriptions/common/fields';
-import { CreateUserRoles } from '../resources/user/user.create';
-import { UpdateUserRoles } from '../resources/user/user.update';
+import { createField } from './common/fields';
 
 export const userOperations: INodeProperties[] = [
   createField({
@@ -12,16 +10,15 @@ export const userOperations: INodeProperties[] = [
     default: 'getAll',
     optionsList: [
       { name: 'Get All', value: 'getAll' },
-      { name: 'Get By ID', value: 'getById' },
       { name: 'Create', value: 'create' },
-      { name: 'Update', value: 'update' },
+      { name: 'Get By ID', value: 'getById' },
       { name: 'Delete', value: 'delete' },
+      { name: 'Update', value: 'update' }
     ],
   }),
 ];
 
 export const userFields: INodeProperties[] = [
-  // Pagination
   createField({
     displayName: 'Page',
     name: 'page',
@@ -40,14 +37,42 @@ export const userFields: INodeProperties[] = [
     operations: ['getAll'],
   }),
 
-  // User ID
+  createField({
+    displayName: 'Starting After',
+    name: 'startingAfter',
+    type: 'string',
+    default: '',
+    description: 'Cursor for next page (optional, for cursor-based pagination)',
+    resource: 'user',
+    operations: ['getAll'],
+    
+  }),
+
+  {
+    displayName: 'Additional Fields',
+    name: 'additionalFields',
+    type: 'collection',
+    default: {},
+    placeholder: 'Add Field',
+    displayOptions: {
+      show: { resource: ['user'], operation: ['create'] },
+    },
+    options: [
+    { displayName: 'Email', name: 'email', type: 'string', default: '' },
+    { displayName: 'First Name', name: 'firstName', type: 'string', default: '' },
+    { displayName: 'Last Name', name: 'lastName', type: 'string', default: '' },
+    { displayName: 'Account Type', name: 'accountType', type: 'string', default: '' }
+    ],
+  },
+
   createField({
     displayName: 'User',
     name: 'userId',
     type: 'resourceLocator',
-    description: 'Select a user from the list or enter the user ID manually',
+    default: { mode: 'list', value: '' },
+    description: 'Select a user from the list or enter its ID',
     resource: 'user',
-    operations: ['getById', 'update', 'delete'],
+    operations: ['getById'],
     modes: [
       {
         displayName: 'From list',
@@ -64,13 +89,13 @@ export const userFields: INodeProperties[] = [
         displayName: 'By ID',
         name: 'id',
         type: 'string',
-        placeholder: 'Enter user ID (GUID)',
+        placeholder: 'Enter user ID',
         validation: [
           {
             type: 'regex',
             properties: {
-              regex: '^[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[1-5][0-9a-fA-F]{3}\\b-[89abAB][0-9a-fA-F]{3}\\b-[0-9a-fA-F]{12}$',
-              errorMessage: 'Enter a valid GUID',
+              regex: '^\\\\d+$',
+              errorMessage: 'Only numeric IDs are allowed',
             },
           },
         ],
@@ -78,62 +103,95 @@ export const userFields: INodeProperties[] = [
     ],
   }),
 
-  // User Body
   createField({
-    displayName: 'Email',
-    name: 'Email',
-    type: 'string',
-    description: 'Email for creating or updating a user',
+    displayName: 'User',
+    name: 'userId',
+    type: 'resourceLocator',
+    default: { mode: 'list', value: '' },
+    description: 'Select a user from the list or enter its ID',
     resource: 'user',
-    operations: ['create'],
+    operations: ['delete'],
+    modes: [
+      {
+        displayName: 'From list',
+        name: 'list',
+        type: 'list',
+        placeholder: 'Select a user...',
+        typeOptions: {
+          searchListMethod: 'searchUsers',
+          searchable: true,
+          searchFilterRequired: false,
+        },
+      },
+      {
+        displayName: 'By ID',
+        name: 'id',
+        type: 'string',
+        placeholder: 'Enter user ID',
+        validation: [
+          {
+            type: 'regex',
+            properties: {
+              regex: '^\\\\d+$',
+              errorMessage: 'Only numeric IDs are allowed',
+            },
+          },
+        ],
+      },
+    ],
   }),
 
-  createField({
-    displayName: 'FirstName',
-    name: 'FirstName',
-    type: 'string',
-    description: 'FirstName for creating or updating a user',
-    resource: 'user',
-    operations: ['create', 'update'],
-  }),
-  createField({
-    displayName: 'LastName',
-    name: 'LastName',
-    type: 'string',
-    description: 'LastName for creating or updating a user',
-    resource: 'user',
-    operations: ['create', 'update'],
-  }),
+  {
+    displayName: 'Update Fields',
+    name: 'updateFields',
+    type: 'collection',
+    default: {},
+    placeholder: 'Add Field',
+    displayOptions: {
+      show: { resource: ['user'], operation: ['update'] },
+    },
+    options: [
+    { displayName: 'First Name', name: 'firstName', type: 'string', default: '' },
+    { displayName: 'Last Name', name: 'lastName', type: 'string', default: '' },
+    { displayName: 'Account Type', name: 'accountType', type: 'string', default: '' }
+    ],
+  },
 
   createField({
-    displayName: 'Active',
-    name: 'Active',
-    type: 'boolean',
-    description: 'boolean for creating or updating a user',
-    resource: 'user',
-    operations: ['create', 'update'],
-  }),
-
-  createField({
-    displayName: 'AccountType',
-    name: 'AccountType',
-    type: 'options',
-    description: 'AccountType for creating a user',
-    resource: 'user',
-    operations: ['create'],
-    optionsList: CreateUserRoles,
-    default: 'User',
-  }),
-
-  createField({
-    displayName: 'AccountType',
-    name: 'AccountType',
-    type: 'options',
-    description: 'AccountType for updating a user',
+    displayName: 'User',
+    name: 'userId',
+    type: 'resourceLocator',
+    default: { mode: 'list', value: '' },
+    description: 'Select a user from the list or enter its ID',
     resource: 'user',
     operations: ['update'],
-    optionsList: UpdateUserRoles,
-    default: 'User',
-  }),
-
+    modes: [
+      {
+        displayName: 'From list',
+        name: 'list',
+        type: 'list',
+        placeholder: 'Select a user...',
+        typeOptions: {
+          searchListMethod: 'searchUsers',
+          searchable: true,
+          searchFilterRequired: false,
+        },
+      },
+      {
+        displayName: 'By ID',
+        name: 'id',
+        type: 'string',
+        placeholder: 'Enter user ID',
+        validation: [
+          {
+            type: 'regex',
+            properties: {
+              regex: '^\\\\d+$',
+              errorMessage: 'Only numeric IDs are allowed',
+            },
+          },
+        ],
+      },
+    ],
+  })
 ];

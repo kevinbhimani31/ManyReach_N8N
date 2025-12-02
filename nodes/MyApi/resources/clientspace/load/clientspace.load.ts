@@ -1,38 +1,34 @@
-import {
-  ILoadOptionsFunctions,
-  INodePropertyOptions,
-} from 'n8n-workflow';
-import { loadDropdown, searchResourceLocator } from '../../../helpers/searchHelper';
+import { ILoadOptionsFunctions } from 'n8n-workflow';
 import { apiRequest } from '../../../helpers/apiRequest';
-import { extractArray } from '../../../helpers/response.convert';
 
-async function fetchClientspaces(
-  this: ILoadOptionsFunctions,
-): Promise<INodePropertyOptions[]> {
-  const response = await apiRequest.call(this, 'GET', '/clientspaces', {}, { limit: 10 });
-
-  let clientspaces: any[] = extractArray (response, 'clientspaces');
-
-
-  return clientspaces.map((clientspace: any) => ({
-    name: clientspace.Title ?? clientspace.title ?? `Clientspace ${clientspace.ClientspaceId ?? clientspace.clientspaceId}`,
-    value: clientspace.ClientspaceId ?? clientspace.clientspaceId ?? clientspace.clientspaceid,
-  })).filter((option) => option.value !== undefined && option.value !== null && option.value !== '');
+/**
+ * Load clientspaces for dropdown
+ */
+export async function loadClientspacesForDropdown(this: ILoadOptionsFunctions) {
+  const response = await apiRequest.call(this, 'GET', '/api/v2/clientspaces');
+  const items = response?.data ?? response?.items ?? response ?? [];
+  
+  return items.map((item: any) => ({
+    name: item.name || item.title || `Clientspace #${item.id}`,
+    value: item.id,
+  }));
 }
 
-export async function loadClientspacesForDropdown
-(
+/**
+ * Search clientspaces for resource locator
+ */
+export async function searchClientspacesForResourceLocator(
   this: ILoadOptionsFunctions,
-) 
-{
-  return loadDropdown.call(this, fetchClientspaces);
-}
-
-export async function searchClientspacesForResourceLocator
-(
-  this: ILoadOptionsFunctions,
-  filter?: string,
-) 
-{
-  return searchResourceLocator.call(this, fetchClientspaces, filter);
+  filter?: string
+) {
+  const response = await apiRequest.call(this, 'GET', '/api/v2/clientspaces', {}, { search: filter });
+  const items = response?.data ?? response?.items ?? response ?? [];
+  
+  return {
+    results: items.map((item: any) => ({
+      name: item.name || item.title || `Clientspace #${item.id}`,
+      value: item.id,
+      url: `/api/v2/clientspaces/${item.id}`,
+    })),
+  };
 }

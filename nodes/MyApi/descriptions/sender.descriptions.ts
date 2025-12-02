@@ -1,5 +1,5 @@
 import { INodeProperties } from 'n8n-workflow';
-import { createField } from '../descriptions/common/fields';
+import { createField } from './common/fields';
 
 export const senderOperations: INodeProperties[] = [
   createField({
@@ -10,16 +10,16 @@ export const senderOperations: INodeProperties[] = [
     default: 'getAll',
     optionsList: [
       { name: 'Get All', value: 'getAll' },
+      { name: 'Create', value: 'create' },
       { name: 'Get By ID', value: 'getById' },
-      // { name: 'Create', value: 'create' },
-      // { name: 'Update', value: 'update' },
       { name: 'Delete', value: 'delete' },
+      { name: 'Update', value: 'update' },
+      { name: 'GetErrors', value: 'getErrors' }
     ],
   }),
 ];
 
 export const senderFields: INodeProperties[] = [
-  // Pagination
   createField({
     displayName: 'Page',
     name: 'page',
@@ -38,15 +38,15 @@ export const senderFields: INodeProperties[] = [
     operations: ['getAll'],
   }),
 
-  // Filters
   createField({
     displayName: 'Folder',
     name: 'folder',
     type: 'string',
     default: '',
-    description: 'Filter by folder name',
+    description: 'Filter by folder name.',
     resource: 'sender',
     operations: ['getAll'],
+    
   }),
 
   createField({
@@ -54,24 +54,21 @@ export const senderFields: INodeProperties[] = [
     name: 'status',
     type: 'string',
     default: '',
-    description: 'Filter by status',
+    description: 'Filter by status (e.g., \"error\").',
     resource: 'sender',
     operations: ['getAll'],
+    
   }),
 
   createField({
-    displayName: 'Warm',
-    name: 'warm',
-    type: 'options',
-    default: 'any',
-    description: 'Filter by warmup status',
+    displayName: 'Warmup',
+    name: 'warmup',
+    type: 'boolean',
+    default: false,
+    description: 'Filter by warmup status.',
     resource: 'sender',
     operations: ['getAll'],
-    optionsList: [
-      { name: 'Any', value: 'any' },
-      { name: 'Enabled', value: 'true' },
-      { name: 'Disabled', value: 'false' },
-    ],
+    
   }),
 
   createField({
@@ -79,9 +76,10 @@ export const senderFields: INodeProperties[] = [
     name: 'search',
     type: 'string',
     default: '',
-    description: 'Case-insensitive contains match on name or email',
+    description: 'Search by text (first/last/email).',
     resource: 'sender',
     operations: ['getAll'],
+    
   }),
 
   createField({
@@ -89,19 +87,152 @@ export const senderFields: INodeProperties[] = [
     name: 'startingAfter',
     type: 'number',
     default: 0,
-    description: 'Cursor for next page (omit or 0 to ignore)',
+    description: 'Cursor for next page (optional, for cursor-based pagination)',
     resource: 'sender',
     operations: ['getAll'],
+    
   }),
 
-  // Get By ID
+  createField({
+    displayName: 'Email',
+    name: 'email',
+    type: 'string',
+    default: '',
+    description: 'Email address of the sender account used for outgoing campaigns; must be valid email format with maximum 100 characters.',
+    resource: 'sender',
+    operations: ['create'],
+    required: true,
+  }),
+
+  createField({
+    displayName: 'Daily Limit',
+    name: 'dailyLimit',
+    type: 'number',
+    default: 0,
+    description: 'Maximum number of emails this sender can send per day; must be between 1 and 10,000.',
+    resource: 'sender',
+    operations: ['create'],
+    required: true,
+  }),
+
+  createField({
+    displayName: 'Custom Smtp Server',
+    name: 'customSmtpServer',
+    type: 'string',
+    default: '',
+    description: 'SMTP server hostname for custom email sending configuration; maximum 128 characters.',
+    resource: 'sender',
+    operations: ['create'],
+    required: true,
+  }),
+
+  createField({
+    displayName: 'Custom Smtp Port',
+    name: 'customSmtpPort',
+    type: 'number',
+    default: 0,
+    description: 'SMTP server port number for custom email sending configuration.',
+    resource: 'sender',
+    operations: ['create'],
+    required: true,
+  }),
+
+  createField({
+    displayName: 'Custom Smtp Pass',
+    name: 'customSmtpPass',
+    type: 'string',
+    default: '',
+    description: 'Password for custom SMTP server authentication; maximum 256 characters, stored securely.',
+    resource: 'sender',
+    operations: ['create'],
+    required: true,
+  }),
+
+  createField({
+    displayName: 'Custom Imap Server',
+    name: 'customImapServer',
+    type: 'string',
+    default: '',
+    description: 'IMAP server hostname for custom email retrieval configuration; maximum 128 characters.',
+    resource: 'sender',
+    operations: ['create'],
+    required: true,
+  }),
+
+  createField({
+    displayName: 'Custom Imap Port',
+    name: 'customImapPort',
+    type: 'string',
+    default: '',
+    description: 'IMAP server port number for custom email retrieval configuration; typically 993 for SSL/TLS; maximum 64 characters.',
+    resource: 'sender',
+    operations: ['create'],
+    required: true,
+  }),
+
+  createField({
+    displayName: 'Custom Imap Pass',
+    name: 'customImapPass',
+    type: 'string',
+    default: '',
+    description: 'Password for custom IMAP server authentication; maximum 256 characters, stored securely.',
+    resource: 'sender',
+    operations: ['create'],
+    required: true,
+  }),
+
+  {
+    displayName: 'Additional Fields',
+    name: 'additionalFields',
+    type: 'collection',
+    default: {},
+    placeholder: 'Add Field',
+    displayOptions: {
+      show: { resource: ['sender'], operation: ['create'] },
+    },
+    options: [
+    { displayName: 'Folder', name: 'folder', type: 'string', default: '' },
+    { displayName: 'From Name', name: 'fromName', type: 'string', default: '' },
+    { displayName: 'Reply To', name: 'replyTo', type: 'string', default: '' },
+    { displayName: 'First Name', name: 'firstName', type: 'string', default: '' },
+    { displayName: 'Last Name', name: 'lastName', type: 'string', default: '' },
+    { displayName: 'Signature', name: 'signature', type: 'string', default: '' },
+    { displayName: 'Tracking Domain', name: 'trackingDomain', type: 'string', default: '' },
+    { displayName: 'Delay Min', name: 'delayMin', type: 'number', default: 0 },
+    { displayName: 'Daily Limit Increase', name: 'dailyLimitIncrease', type: 'boolean', default: false },
+    { displayName: 'Daily Limit Increase To Max', name: 'dailyLimitIncreaseToMax', type: 'number', default: 0 },
+    { displayName: 'Daily Limit Increase Percent', name: 'dailyLimitIncreasePercent', type: 'number', default: 0 },
+    { displayName: 'Warmup', name: 'warmup', type: 'boolean', default: false },
+    { displayName: 'Warmup Daily Limit Increase', name: 'warmupDailyLimitIncrease', type: 'boolean', default: false },
+    { displayName: 'Warmup Daily Limit Increase To Max', name: 'warmupDailyLimitIncreaseToMax', type: 'number', default: 0 },
+    { displayName: 'Warmup Daily Limit Increase Percent', name: 'warmupDailyLimitIncreasePercent', type: 'number', default: 0 },
+    { displayName: 'Warmup Daily Limit', name: 'warmupDailyLimit', type: 'number', default: 0 },
+    { displayName: 'Warmup Reply Percent', name: 'warmupReplyPercent', type: 'number', default: 0 },
+    { displayName: 'Warmup Skip Weekends', name: 'warmupSkipWeekends', type: 'boolean', default: false },
+    { displayName: 'Custom Warmup Tag', name: 'customWarmupTag', type: 'string', default: '' },
+    { displayName: 'Custom Smtp Username', name: 'customSmtpUsername', type: 'string', default: '' },
+    { displayName: 'Custom Imap Username', name: 'customImapUsername', type: 'string', default: '' },
+    { displayName: 'Sender Custom1', name: 'senderCustom1', type: 'string', default: '' },
+    { displayName: 'Sender Custom2', name: 'senderCustom2', type: 'string', default: '' },
+    { displayName: 'Sender Custom3', name: 'senderCustom3', type: 'string', default: '' },
+    { displayName: 'Sender Custom4', name: 'senderCustom4', type: 'string', default: '' },
+    { displayName: 'Sender Custom5', name: 'senderCustom5', type: 'string', default: '' },
+    { displayName: 'Sender Custom6', name: 'senderCustom6', type: 'string', default: '' },
+    { displayName: 'Sender Custom7', name: 'senderCustom7', type: 'string', default: '' },
+    { displayName: 'Sender Custom8', name: 'senderCustom8', type: 'string', default: '' },
+    { displayName: 'Sender Custom9', name: 'senderCustom9', type: 'string', default: '' },
+    { displayName: 'Sender Custom10', name: 'senderCustom10', type: 'string', default: '' }
+    ],
+  },
+
   createField({
     displayName: 'Sender',
     name: 'senderId',
     type: 'resourceLocator',
-    description: 'Select a sender from the list or enter the sender ID manually',
+    default: { mode: 'list', value: '' },
+    description: 'Select a sender from the list or enter its ID',
     resource: 'sender',
-    operations: ['getById', 'delete'],
+    operations: ['getById'],
     modes: [
       {
         displayName: 'From list',
@@ -118,17 +249,182 @@ export const senderFields: INodeProperties[] = [
         displayName: 'By ID',
         name: 'id',
         type: 'string',
-        placeholder: 'Enter sender ID (number)',
+        placeholder: 'Enter sender ID',
         validation: [
           {
             type: 'regex',
             properties: {
-              regex: '^[0-9]+$',
-              errorMessage: 'Enter a valid numeric ID',
+              regex: '^\\\\d+$',
+              errorMessage: 'Only numeric IDs are allowed',
             },
           },
         ],
       },
     ],
   }),
+
+  createField({
+    displayName: 'Sender',
+    name: 'senderId',
+    type: 'resourceLocator',
+    default: { mode: 'list', value: '' },
+    description: 'Select a sender from the list or enter its ID',
+    resource: 'sender',
+    operations: ['delete'],
+    modes: [
+      {
+        displayName: 'From list',
+        name: 'list',
+        type: 'list',
+        placeholder: 'Select a sender...',
+        typeOptions: {
+          searchListMethod: 'searchSenders',
+          searchable: true,
+          searchFilterRequired: false,
+        },
+      },
+      {
+        displayName: 'By ID',
+        name: 'id',
+        type: 'string',
+        placeholder: 'Enter sender ID',
+        validation: [
+          {
+            type: 'regex',
+            properties: {
+              regex: '^\\\\d+$',
+              errorMessage: 'Only numeric IDs are allowed',
+            },
+          },
+        ],
+      },
+    ],
+  }),
+
+  {
+    displayName: 'Update Fields',
+    name: 'updateFields',
+    type: 'collection',
+    default: {},
+    placeholder: 'Add Field',
+    displayOptions: {
+      show: { resource: ['sender'], operation: ['update'] },
+    },
+    options: [
+    { displayName: 'Folder', name: 'folder', type: 'string', default: '' },
+    { displayName: 'From Name', name: 'fromName', type: 'string', default: '' },
+    { displayName: 'Reply To', name: 'replyTo', type: 'string', default: '' },
+    { displayName: 'First Name', name: 'firstName', type: 'string', default: '' },
+    { displayName: 'Last Name', name: 'lastName', type: 'string', default: '' },
+    { displayName: 'Signature', name: 'signature', type: 'string', default: '' },
+    { displayName: 'Tracking Domain', name: 'trackingDomain', type: 'string', default: '' },
+    { displayName: 'Delay Min', name: 'delayMin', type: 'number', default: 0 },
+    { displayName: 'Daily Limit', name: 'dailyLimit', type: 'number', default: 0 },
+    { displayName: 'Daily Limit Increase', name: 'dailyLimitIncrease', type: 'boolean', default: false },
+    { displayName: 'Daily Limit Increase To Max', name: 'dailyLimitIncreaseToMax', type: 'number', default: 0 },
+    { displayName: 'Daily Limit Increase Percent', name: 'dailyLimitIncreasePercent', type: 'number', default: 0 },
+    { displayName: 'Warmup', name: 'warmup', type: 'boolean', default: false },
+    { displayName: 'Warmup Daily Limit Increase', name: 'warmupDailyLimitIncrease', type: 'boolean', default: false },
+    { displayName: 'Warmup Daily Limit Increase To Max', name: 'warmupDailyLimitIncreaseToMax', type: 'number', default: 0 },
+    { displayName: 'Warmup Daily Limit Increase Percent', name: 'warmupDailyLimitIncreasePercent', type: 'number', default: 0 },
+    { displayName: 'Warmup Daily Limit', name: 'warmupDailyLimit', type: 'number', default: 0 },
+    { displayName: 'Warmup Reply Percent', name: 'warmupReplyPercent', type: 'number', default: 0 },
+    { displayName: 'Warmup Skip Weekends', name: 'warmupSkipWeekends', type: 'boolean', default: false },
+    { displayName: 'Custom Warmup Tag', name: 'customWarmupTag', type: 'string', default: '' },
+    { displayName: 'Custom Smtp Server', name: 'customSmtpServer', type: 'string', default: '' },
+    { displayName: 'Custom Smtp Port', name: 'customSmtpPort', type: 'number', default: 0 },
+    { displayName: 'Custom Smtp Username', name: 'customSmtpUsername', type: 'string', default: '' },
+    { displayName: 'Custom Smtp Pass', name: 'customSmtpPass', type: 'string', default: '' },
+    { displayName: 'Custom Imap Server', name: 'customImapServer', type: 'string', default: '' },
+    { displayName: 'Custom Imap Port', name: 'customImapPort', type: 'string', default: '' },
+    { displayName: 'Custom Imap Username', name: 'customImapUsername', type: 'string', default: '' },
+    { displayName: 'Custom Imap Pass', name: 'customImapPass', type: 'string', default: '' },
+    { displayName: 'Sender Custom1', name: 'senderCustom1', type: 'string', default: '' },
+    { displayName: 'Sender Custom2', name: 'senderCustom2', type: 'string', default: '' },
+    { displayName: 'Sender Custom3', name: 'senderCustom3', type: 'string', default: '' },
+    { displayName: 'Sender Custom4', name: 'senderCustom4', type: 'string', default: '' },
+    { displayName: 'Sender Custom5', name: 'senderCustom5', type: 'string', default: '' },
+    { displayName: 'Sender Custom6', name: 'senderCustom6', type: 'string', default: '' },
+    { displayName: 'Sender Custom7', name: 'senderCustom7', type: 'string', default: '' },
+    { displayName: 'Sender Custom8', name: 'senderCustom8', type: 'string', default: '' },
+    { displayName: 'Sender Custom9', name: 'senderCustom9', type: 'string', default: '' },
+    { displayName: 'Sender Custom10', name: 'senderCustom10', type: 'string', default: '' }
+    ],
+  },
+
+  createField({
+    displayName: 'Sender',
+    name: 'senderId',
+    type: 'resourceLocator',
+    default: { mode: 'list', value: '' },
+    description: 'Select a sender from the list or enter its ID',
+    resource: 'sender',
+    operations: ['update'],
+    modes: [
+      {
+        displayName: 'From list',
+        name: 'list',
+        type: 'list',
+        placeholder: 'Select a sender...',
+        typeOptions: {
+          searchListMethod: 'searchSenders',
+          searchable: true,
+          searchFilterRequired: false,
+        },
+      },
+      {
+        displayName: 'By ID',
+        name: 'id',
+        type: 'string',
+        placeholder: 'Enter sender ID',
+        validation: [
+          {
+            type: 'regex',
+            properties: {
+              regex: '^\\\\d+$',
+              errorMessage: 'Only numeric IDs are allowed',
+            },
+          },
+        ],
+      },
+    ],
+  }),
+
+  createField({
+    displayName: 'Sender',
+    name: 'senderId',
+    type: 'resourceLocator',
+    default: { mode: 'list', value: '' },
+    description: 'Select a sender from the list or enter its ID',
+    resource: 'sender',
+    operations: ['getErrors'],
+    modes: [
+      {
+        displayName: 'From list',
+        name: 'list',
+        type: 'list',
+        placeholder: 'Select a sender...',
+        typeOptions: {
+          searchListMethod: 'searchSenders',
+          searchable: true,
+          searchFilterRequired: false,
+        },
+      },
+      {
+        displayName: 'By ID',
+        name: 'id',
+        type: 'string',
+        placeholder: 'Enter sender ID',
+        validation: [
+          {
+            type: 'regex',
+            properties: {
+              regex: '^\\\\d+$',
+              errorMessage: 'Only numeric IDs are allowed',
+            },
+          },
+        ],
+      },
+    ],
+  })
 ];

@@ -1,41 +1,34 @@
-import {
-  ILoadOptionsFunctions,
-  INodeListSearchResult,
-  INodePropertyOptions,
-} from 'n8n-workflow';
+import { ILoadOptionsFunctions } from 'n8n-workflow';
 import { apiRequest } from '../../../helpers/apiRequest';
-import { extractArray } from '../../../helpers/response.convert';
-import { loadDropdown, searchResourceLocator } from '../../../helpers/searchHelper';
 
-async function fetchSenders(
-  this: ILoadOptionsFunctions,
-): Promise<INodePropertyOptions[]> {
-  const response = await apiRequest.call(this, 'GET', '/senders', {}, { page: 1, limit: 200 });
-
-  const senders: any[] = extractArray(response, 'senders');
-
-  return senders
-    .map((sender: any) => {
-      const value =
-        sender?.SenderId ?? sender?.senderId ?? sender?.Id ?? sender?.id ?? sender?.SenderID ?? sender?.senderID;
-      const name =
-        sender?.Email ?? sender?.email ?? sender?.Address ?? sender?.address ?? `Sender ${value ?? ''}`;
-      return { name, value } as INodePropertyOptions;
-    })
-    .filter((option) => option.value !== undefined && option.value !== null && option.value !== '');
+/**
+ * Load senders for dropdown
+ */
+export async function loadSendersForDropdown(this: ILoadOptionsFunctions) {
+  const response = await apiRequest.call(this, 'GET', '/api/v2/senders');
+  const items = response?.data ?? response?.items ?? response ?? [];
+  
+  return items.map((item: any) => ({
+    name: item.name || item.title || `Sender #${item.id}`,
+    value: item.id,
+  }));
 }
 
-export async function loadSendersForIdDropdown(
-  this: ILoadOptionsFunctions,
-): Promise<INodePropertyOptions[]> {
-  return loadDropdown.call(this, fetchSenders);
-}
-
+/**
+ * Search senders for resource locator
+ */
 export async function searchSendersForResourceLocator(
   this: ILoadOptionsFunctions,
-  filter?: string,
-): Promise<INodeListSearchResult> {
-  return searchResourceLocator.call(this, fetchSenders, filter);
+  filter?: string
+) {
+  const response = await apiRequest.call(this, 'GET', '/api/v2/senders', {}, { search: filter });
+  const items = response?.data ?? response?.items ?? response ?? [];
+  
+  return {
+    results: items.map((item: any) => ({
+      name: item.name || item.title || `Sender #${item.id}`,
+      value: item.id,
+      url: `/api/v2/senders/${item.id}`,
+    })),
+  };
 }
-
-

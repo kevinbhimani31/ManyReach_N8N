@@ -1,5 +1,5 @@
 import { INodeProperties } from 'n8n-workflow';
-import { createField } from '../descriptions/common/fields';
+import { createField } from './common/fields';
 
 export const workspaceOperations: INodeProperties[] = [
   createField({
@@ -10,14 +10,15 @@ export const workspaceOperations: INodeProperties[] = [
     default: 'getAll',
     optionsList: [
       { name: 'Get All', value: 'getAll' },
+      { name: 'Create', value: 'create' },
       { name: 'Get By ID', value: 'getById' },
       { name: 'Delete', value: 'delete' },
+      { name: 'Update', value: 'update' }
     ],
   }),
 ];
 
 export const workspaceFields: INodeProperties[] = [
-  // Pagination
   createField({
     displayName: 'Page',
     name: 'page',
@@ -41,19 +42,31 @@ export const workspaceFields: INodeProperties[] = [
     name: 'startingAfter',
     type: 'number',
     default: 0,
-    description: 'Last workspace ID from previous page (cursor)',
+    description: 'Cursor for next page (optional, for cursor-based pagination)',
     resource: 'workspace',
     operations: ['getAll'],
+    
   }),
 
-  // Get By ID - resource locator
+  createField({
+    displayName: 'Title',
+    name: 'title',
+    type: 'string',
+    default: '',
+    description: 'Display name of the workspace; maximum 256 characters.',
+    resource: 'workspace',
+    operations: ['create'],
+    required: true,
+  }),
+
   createField({
     displayName: 'Workspace',
     name: 'workspaceId',
     type: 'resourceLocator',
-    description: 'Select a workspace or enter the organization ID',
+    default: { mode: 'list', value: '' },
+    description: 'Select a workspace from the list or enter its ID',
     resource: 'workspace',
-    operations: ['getById', 'delete'],
+    operations: ['getById'],
     modes: [
       {
         displayName: 'From list',
@@ -70,19 +83,107 @@ export const workspaceFields: INodeProperties[] = [
         displayName: 'By ID',
         name: 'id',
         type: 'string',
-        placeholder: 'Enter organization ID (number)',
+        placeholder: 'Enter workspace ID',
         validation: [
           {
             type: 'regex',
             properties: {
-              regex: '^[0-9]+$',
-              errorMessage: 'Enter a valid numeric ID',
+              regex: '^\\\\d+$',
+              errorMessage: 'Only numeric IDs are allowed',
             },
           },
         ],
       },
     ],
   }),
+
+  createField({
+    displayName: 'Workspace',
+    name: 'workspaceId',
+    type: 'resourceLocator',
+    default: { mode: 'list', value: '' },
+    description: 'Select a workspace from the list or enter its ID',
+    resource: 'workspace',
+    operations: ['delete'],
+    modes: [
+      {
+        displayName: 'From list',
+        name: 'list',
+        type: 'list',
+        placeholder: 'Select a workspace...',
+        typeOptions: {
+          searchListMethod: 'searchWorkspaces',
+          searchable: true,
+          searchFilterRequired: false,
+        },
+      },
+      {
+        displayName: 'By ID',
+        name: 'id',
+        type: 'string',
+        placeholder: 'Enter workspace ID',
+        validation: [
+          {
+            type: 'regex',
+            properties: {
+              regex: '^\\\\d+$',
+              errorMessage: 'Only numeric IDs are allowed',
+            },
+          },
+        ],
+      },
+    ],
+  }),
+
+  createField({
+    displayName: 'Workspace',
+    name: 'workspaceId',
+    type: 'resourceLocator',
+    default: { mode: 'list', value: '' },
+    description: 'Select a workspace from the list or enter its ID',
+    resource: 'workspace',
+    operations: ['update'],
+    modes: [
+      {
+        displayName: 'From list',
+        name: 'list',
+        type: 'list',
+        placeholder: 'Select a workspace...',
+        typeOptions: {
+          searchListMethod: 'searchWorkspaces',
+          searchable: true,
+          searchFilterRequired: false,
+        },
+      },
+      {
+        displayName: 'By ID',
+        name: 'id',
+        type: 'string',
+        placeholder: 'Enter workspace ID',
+        validation: [
+          {
+            type: 'regex',
+            properties: {
+              regex: '^\\\\d+$',
+              errorMessage: 'Only numeric IDs are allowed',
+            },
+          },
+        ],
+      },
+    ],
+  }),
+
+  {
+    displayName: 'Update Fields',
+    name: 'updateFields',
+    type: 'collection',
+    default: {},
+    placeholder: 'Add Field',
+    displayOptions: {
+      show: { resource: ['workspace'], operation: ['update'] },
+    },
+    options: [
+    { displayName: 'Title', name: 'title', type: 'string', default: '' }
+    ],
+  }
 ];
-
-

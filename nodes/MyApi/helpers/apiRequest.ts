@@ -36,6 +36,7 @@ export async function apiRequest(
   };
 
   try {
+    console.log(`Making API request to: ${options.uri}`);
     const response = await this.helpers.request!(options);
     return response;
   } catch (err: any) {

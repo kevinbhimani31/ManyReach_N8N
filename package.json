@@ -1,60 +1,65 @@
 {
-	"name": "n8n-nodes-myapi",
-	"version": "0.1.0",
-	"description": "",
-	"license": "MIT",
-	"homepage": "",
-	"keywords": [
-		"n8n-community-node-package"
-	],
-	"author": {
-		"name": "",
-		"email": ""
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/<...>/n8n-nodes-<...>.git"
-	},
-"scripts": {
-  "build": "tsc",
-  "watch": "nodemon --watch nodes --ext ts --exec \"npm run build\"",
-  "dev": "concurrently \"npm run watch\" \"n8n\"",
-  "lint": "n8n-node lint",
-  "lint:fix": "n8n-node lint --fix",
-  "release": "n8n-node release",
-  "prepublishOnly": "n8n-node prerelease",
-  "start": "n8n"
-},
-	"files": [
-		"dist"
-	],
-	"n8n": {
-		"n8nNodesApiVersion": 1,
-		"strict": true,
-		"credentials": [
-			"dist/credentials/GithubIssuesApi.credentials.js",
-			"dist/credentials/GithubIssuesOAuth2Api.credentials.js"
-		],
-		"nodes": [
-			"dist/nodes/GithubIssues/GithubIssues.node.js",
-			"dist/nodes/Example/Example.node.js"
-		]
-	},
-	"devDependencies": {
-		"@n8n/node-cli": "*",
-		"@types/node": "^24.10.0",
-		"concurrently": "^9.2.1",
-		"eslint": "9.32.0",
-		"nodemon": "^3.1.11",
-		"prettier": "3.6.2",
-		"release-it": "^19.0.4",
-		"ts-node": "^10.9.2",
-		"typescript": "5.9.2"
-	},
-	"peerDependencies": {
-		"n8n-workflow": "*"
-	},
-	"dependencies": {
-		"axios": "^1.13.2"
-	}
+  "name": "n8n-nodes-myapi",
+  "version": "0.1.0",
+  "description": "",
+  "license": "MIT",
+  "homepage": "",
+  "keywords": [
+    "n8n-community-node-package"
+  ],
+  "author": {
+    "name": "",
+    "email": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/<...>/n8n-nodes-<...>.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "nodemon --watch nodes --ext ts --exec \"npm run build\"",
+    "dev": "concurrently \"npm run watch\" \"n8n\"",
+    "lint": "n8n-node lint",
+    "lint:fix": "n8n-node lint --fix",
+    "release": "n8n-node release",
+    "prepublishOnly": "n8n-node prerelease",
+    "start": "n8n",
+    "generate": "ts-node tools/generate-nodes.ts",
+    "generate:watch": "nodemon --watch ../YourApi --ext cs --exec \"npm run generate\"",
+    "build:tools": "tsc -p tools/tsconfig.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "strict": true,
+    "credentials": [
+      "dist/credentials/GithubIssuesApi.credentials.js",
+      "dist/credentials/GithubIssuesOAuth2Api.credentials.js",
+      "dist/credentials/MyApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/GithubIssues/GithubIssues.node.js",
+      "dist/nodes/Example/Example.node.js",
+      "dist/nodes/MyApi/MyApi.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@n8n/node-cli": "*",
+    "@types/node": "^24.10.0",
+    "concurrently": "^9.2.1",
+    "eslint": "9.32.0",
+    "nodemon": "^3.1.11",
+    "prettier": "3.6.2",
+    "release-it": "^19.0.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "dependencies": {
+    "axios": "^1.13.2"
+  }
 }

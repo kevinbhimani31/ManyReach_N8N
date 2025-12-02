@@ -1,31 +1,27 @@
 import { IExecuteFunctions } from 'n8n-workflow';
 import { apiRequest } from '../../helpers/apiRequest';
-import { ensureId, extractNumericId } from '../../helpers/validation';
+import { extractResourceId } from '../../helpers/validation';
 
+/**
+ * Update clientspace
+ * Updates one or more clientspace fields (Title, Credit Limit, Separate Credits) under the authenticated organization.
+
+Behavior:
+- Authenticates via API key
+- Ensures the workspace belongs to caller's organization (as Agency)
+- Allows updating Title, Auto Allocate, Credit Amount, HasSeparateCredits
+- Ignores any fields not included in query
+- New title (optional, must be unique in agency)
+- Auto allocate credits (optional)
+- Credit Amount (optional)
+- Enable/disable separate credits (optional)
+ */
 export async function updateClientspace(this: IExecuteFunctions, index: number) {
-  const rawId = this.getNodeParameter('clientspaceId', index) as any;
-  const id = extractNumericId(rawId, 'Clientspace ID');
-  ensureId(id);
-  const title = this.getNodeParameter('Title', index) as string;
-  console.log('Update Clientspace called');
-  const separateCredits = this.getNodeParameter('SeparateCredits', index) as boolean;
-  const autoAllocate = this.getNodeParameter('AutoAllocate', index) as boolean;
-  const creditAmount = this.getNodeParameter('CreditAmount', index) as number;
-  const request: UpdateClientspaceRequest = {
-    Title: title,
-    SeparateCredits: separateCredits,
-    AutoAllocate: autoAllocate,
-    CreditAmount: creditAmount,
-  };
-
-  const response = await apiRequest.call(this, 'PATCH', `/clientspaces/${id}`, request);
-
+  const resourceLocator = this.getNodeParameter('clientspaceId', index) as any;
+  const id = extractResourceId(resourceLocator);
+  
+  const updateFields = this.getNodeParameter('updateFields', index, {}) as any;
+  
+  const response = await apiRequest.call(this, 'PUT', `/api/v2/clientspaces/${id}`, updateFields);
   return response;
-}
-
-export interface UpdateClientspaceRequest{
-  Title: string;
-  SeparateCredits?: boolean;
-  AutoAllocate: boolean;
-  CreditAmount: number;
 }
