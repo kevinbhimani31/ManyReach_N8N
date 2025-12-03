@@ -11,8 +11,15 @@ async function main() {
     console.log('==========================\n');
 
     // Configuration
-    const SWAGGER_URL = process.env.SWAGGER_URL || 'https://localhost:44398/Swagger/Docs/v2';
-    const OUTPUT_DIR = process.env.OUTPUT_DIR || path.join(__dirname, '..');
+    // Configuration
+    const configPath = path.join(__dirname, 'config.json');
+    const config = fs.existsSync(configPath) ? JSON.parse(fs.readFileSync(configPath, 'utf-8')) : {};
+
+    const SWAGGER_URL = process.env.SWAGGER_URL || config.swagger?.url || 'https://localhost:44398/Swagger/Docs/v2';
+    const OUTPUT_DIR = process.env.OUTPUT_DIR || config.generator?.outputDir || path.join(__dirname, '..');
+
+    // const SWAGGER_URL = process.env.SWAGGER_URL || 'https://localhost:44398/Swagger/Docs/v2';
+    // const OUTPUT_DIR = process.env.OUTPUT_DIR || path.join(__dirname, '..');
     const CACHE_DIR = path.join(__dirname, '../cache');
     const PREVIOUS_SWAGGER = path.join(CACHE_DIR, 'swagger-previous.json');
     const CURRENT_SWAGGER = path.join(CACHE_DIR, 'swagger-latest.json');

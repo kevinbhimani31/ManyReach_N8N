@@ -61,7 +61,7 @@ export const userFields: INodeProperties[] = [
     { displayName: 'Email', name: 'email', type: 'string', default: '' },
     { displayName: 'First Name', name: 'firstName', type: 'string', default: '' },
     { displayName: 'Last Name', name: 'lastName', type: 'string', default: '' },
-    { displayName: 'Account Type', name: 'accountType', type: 'string', default: '' }
+    { displayName: 'Account Type', name: 'accountType', type: 'options', default: 'SingleUnibox', options: [{ name: 'SingleUnibox', value: 'SingleUnibox' }, { name: 'SingleReports', value: 'SingleReports' }, { name: 'SingleSenders', value: 'SingleSenders' }, { name: 'User', value: 'User' }, { name: 'Editor', value: 'Editor' }, { name: 'Admin', value: 'Admin' }, { name: 'SuperAdmin', value: 'SuperAdmin' }] }
     ],
   },
 
@@ -153,7 +153,7 @@ export const userFields: INodeProperties[] = [
     options: [
     { displayName: 'First Name', name: 'firstName', type: 'string', default: '' },
     { displayName: 'Last Name', name: 'lastName', type: 'string', default: '' },
-    { displayName: 'Account Type', name: 'accountType', type: 'string', default: '' }
+    { displayName: 'Account Type', name: 'accountType', type: 'options', default: 'SingleUnibox', options: [{ name: 'SingleUnibox', value: 'SingleUnibox' }, { name: 'SingleReports', value: 'SingleReports' }, { name: 'SingleSenders', value: 'SingleSenders' }, { name: 'User', value: 'User' }, { name: 'Editor', value: 'Editor' }, { name: 'Admin', value: 'Admin' }, { name: 'SuperAdmin', value: 'SuperAdmin' }] }
     ],
   },
 

@@ -84,8 +84,6 @@ export async function createCampaign(this: IExecuteFunctions, index: number) {
   if (additionalFields.sendSunAfter !== undefined) body.sendSunAfter = additionalFields.sendSunAfter;
   if (additionalFields.sendSunBefore !== undefined) body.sendSunBefore = additionalFields.sendSunBefore;
   if (additionalFields.sendSun !== undefined) body.sendSun = additionalFields.sendSun;
-  if (additionalFields.check !== undefined) body.check = additionalFields.check;
-  if (additionalFields.ischecked !== undefined) body.ischecked = additionalFields.ischecked;
   
   const response = await apiRequest.call(this, 'POST', '/api/v2/campaigns', body);
   return response;

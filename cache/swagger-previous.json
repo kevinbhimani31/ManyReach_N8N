@@ -6391,12 +6391,6 @@
           "description": "Enable sending campaign emails on Sunday.",
           "type": "boolean",
           "default": true
-        },
-        "check": {
-          "type": "string"
-        },
-        "ischecked": {
-          "type": "boolean"
         }
       },
       "xml": {

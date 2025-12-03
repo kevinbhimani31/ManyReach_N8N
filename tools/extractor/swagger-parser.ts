@@ -21,6 +21,7 @@ export interface SwaggerParameter {
     schema?: any;
     description?: string;
     default?: any;
+    enum?: (string | number)[];
 }
 
 export interface SwaggerResponse {

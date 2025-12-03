@@ -144,7 +144,7 @@ export const followupFields: INodeProperties[] = [
     { displayName: 'Subject', name: 'subject', type: 'string', default: '' },
     { displayName: 'Body', name: 'body', type: 'string', default: '' },
     { displayName: 'Wait Min', name: 'waitMin', type: 'number', default: 0 },
-    { displayName: 'Wait Units', name: 'waitUnits', type: 'string', default: '' },
+    { displayName: 'Wait Units', name: 'waitUnits', type: 'options', default: 'Minutes', options: [{ name: 'Minutes', value: 'Minutes' }, { name: 'Hours', value: 'Hours' }, { name: 'Days', value: 'Days' }] },
     { displayName: 'Use Original Subject', name: 'useOriginalSubject', type: 'boolean', default: false },
     { displayName: 'Send In Same Thread', name: 'sendInSameThread', type: 'boolean', default: false },
     { displayName: 'Reply In Thread', name: 'replyInThread', type: 'boolean', default: false },

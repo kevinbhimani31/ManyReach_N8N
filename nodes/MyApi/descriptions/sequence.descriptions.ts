@@ -109,9 +109,9 @@ export const sequenceFields: INodeProperties[] = [
     { displayName: 'Condition Extra', name: 'conditionExtra', type: 'boolean', default: false },
     { displayName: 'Condition Negate', name: 'conditionNegate', type: 'boolean', default: false },
     { displayName: 'Condition Times', name: 'conditionTimes', type: 'number', default: 0 },
-    { displayName: 'Condition Reply', name: 'conditionReply', type: 'string', default: '' },
-    { displayName: 'Condition Action', name: 'conditionAction', type: 'string', default: '' },
-    { displayName: 'Condition Operator', name: 'conditionOperator', type: 'string', default: '' }
+    { displayName: 'Condition Reply', name: 'conditionReply', type: 'options', default: 'All', options: [{ name: 'All', value: 'All' }, { name: 'Opened', value: 'Opened' }, { name: 'NotOpened', value: 'NotOpened' }, { name: 'NotReplied', value: 'NotReplied' }, { name: 'Replied', value: 'Replied' }, { name: 'RepliedInterested', value: 'RepliedInterested' }, { name: 'RepliedNotInterested', value: 'RepliedNotInterested' }, { name: 'RepliedNeutral', value: 'RepliedNeutral' }, { name: 'RepliedMaybeLater', value: 'RepliedMaybeLater' }, { name: 'Converted', value: 'Converted' }, { name: 'NotConverted', value: 'NotConverted' }] },
+    { displayName: 'Condition Action', name: 'conditionAction', type: 'options', default: 'Opened', options: [{ name: 'Opened', value: 'Opened' }, { name: 'Clicked', value: 'Clicked' }, { name: 'Bounced', value: 'Bounced' }, { name: 'Unsubscribed', value: 'Unsubscribed' }, { name: 'Converted', value: 'Converted' }] },
+    { displayName: 'Condition Operator', name: 'conditionOperator', type: 'options', default: 'GreaterThanOrEqual', options: [{ name: 'GreaterThanOrEqual', value: 'GreaterThanOrEqual' }, { name: 'LessThanOrEqual', value: 'LessThanOrEqual' }, { name: 'Equal', value: 'Equal' }, { name: 'NotEqual', value: 'NotEqual' }, { name: 'GreaterThan', value: 'GreaterThan' }, { name: 'LessThan', value: 'LessThan' }] }
     ],
   },
 
@@ -205,12 +205,17 @@ export const sequenceFields: INodeProperties[] = [
   createField({
     displayName: 'Wait Units',
     name: 'waitUnits',
-    type: 'string',
-    default: '',
+    type: 'options',
+    default: 'Minutes',
     description: 'Time unit for the wait period (e.g., \'minutes\', \'hours\', \'days\').',
     resource: 'sequence',
     operations: ['createFollowups'],
     required: true,
+    optionsList: [
+      { name: 'Minutes', value: 'Minutes' },
+      { name: 'Hours', value: 'Hours' },
+      { name: 'Days', value: 'Days' }
+    ],
   }),
 
   {

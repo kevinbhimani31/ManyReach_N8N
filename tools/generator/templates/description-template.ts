@@ -153,6 +153,29 @@ ${fields}
     }
 
     private generateQueryField(param: SwaggerParameter, operation: string): string {
+        const enumValues = param.enum || param.schema?.enum;
+
+        if (enumValues) {
+            const optionsList = enumValues.map((val: string | number) => {
+                const valueStr = typeof val === 'string' ? `'${val}'` : val;
+                return `{ name: '${val}', value: ${valueStr} }`;
+            }).join(',\n      ');
+
+            return `  createField({
+    displayName: '${this.paramToDisplayName(param.name)}',
+    name: '${param.name}',
+    type: 'options',
+    default: ${typeof enumValues[0] === 'string' ? `'${enumValues[0]}'` : enumValues[0]},
+    description: '${this.escapeDescription(param.description || '')}',
+    resource: '${this.resource.toLowerCase()}',
+    operations: ['${operation}'],
+    ${param.required ? 'required: true,' : ''}
+    optionsList: [
+      ${optionsList}
+    ],
+  })`;
+        }
+
         const type = this.swaggerTypeToN8nType(param.type);
         return `  createField({
     displayName: '${this.paramToDisplayName(param.name)}',
@@ -228,6 +251,27 @@ ${fields}
     }
 
     private generateBodyField(propName: string, propDef: any, operation: string, required: boolean): string {
+        if (propDef.enum) {
+            const optionsList = propDef.enum.map((val: string | number) => {
+                const valueStr = typeof val === 'string' ? `'${val}'` : val;
+                return `{ name: '${val}', value: ${valueStr} }`;
+            }).join(',\n      ');
+
+            return `  createField({
+    displayName: '${this.paramToDisplayName(propName)}',
+    name: '${propName}',
+    type: 'options',
+    default: ${typeof propDef.enum[0] === 'string' ? `'${propDef.enum[0]}'` : propDef.enum[0]},
+    description: '${this.escapeDescription(propDef.description || '')}',
+    resource: '${this.resource.toLowerCase()}',
+    operations: ['${operation}'],
+    ${required ? 'required: true,' : ''}
+    optionsList: [
+      ${optionsList}
+    ],
+  })`;
+        }
+
         const type = this.swaggerTypeToN8nType(propDef.type);
         return `  createField({
     displayName: '${this.paramToDisplayName(propName)}',
@@ -247,6 +291,16 @@ ${fields}
 
         const options = propNames.map(propName => {
             const propDef = properties[propName];
+
+            if (propDef.enum) {
+                const optionsList = propDef.enum.map((val: string | number) => {
+                    const valueStr = typeof val === 'string' ? `'${val}'` : val;
+                    return `{ name: '${val}', value: ${valueStr} }`;
+                }).join(', ');
+
+                return `    { displayName: '${this.paramToDisplayName(propName)}', name: '${propName}', type: 'options', default: ${typeof propDef.enum[0] === 'string' ? `'${propDef.enum[0]}'` : propDef.enum[0]}, options: [${optionsList}] }`;
+            }
+
             const type = this.swaggerTypeToN8nType(propDef.type);
             return `    { displayName: '${this.paramToDisplayName(propName)}', name: '${propName}', type: '${type}', default: ${this.getDefaultValue(propDef)} }`;
         }).join(',\n');

@@ -6391,6 +6391,12 @@
           "description": "Enable sending campaign emails on Sunday.",
           "type": "boolean",
           "default": true
+        },
+        "thisIsString": {
+          "type": "string"
+        },
+        "thisIsBool": {
+          "type": "boolean"
         }
       },
       "xml": {
