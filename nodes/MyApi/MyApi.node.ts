@@ -11,11 +11,9 @@ import { clientspaceOperations, clientspaceFields } from './descriptions/clients
 import { prospectOperations, prospectFields } from './descriptions/prospect.descriptions';
 import { listOperations, listFields } from './descriptions/list.descriptions';
 import { campaignOperations, campaignFields } from './descriptions/campaign.descriptions';
-import { tagOperations, tagFields } from './descriptions/tag.descriptions';
 import { workspaceOperations, workspaceFields } from './descriptions/workspace.descriptions';
 import { sequenceOperations, sequenceFields } from './descriptions/sequence.descriptions';
 
-import { createTag } from './resources/tag/tag.create';
 // Modular execute handlers
 import { executeUser } from './execute/user.exec';
 import { executeClientspace } from './execute/clientspace.exec';
@@ -23,10 +21,8 @@ import { executeProspect } from './execute/prospect.exec';
 import { executeList } from './execute/list.exec';
 import { executeCampaign } from './execute/campaign.exec';
 import { executeSender } from './execute/sender.exec';
-import { executeTag } from './execute/tag.exec';
 import { executeWorkspace } from './execute/workspace.exec';
 import { executeSequence } from './execute/sequence.exec';
-
 // List controller
 import { loadListsForDropdown, searchListsForResourceLocator } from './resources/list/load/list.load';
 import { loadCampaignsForDropdown, loadSendersForDropdown, searchCampaignsForResourceLocator } from './resources/campaign/load/campaign.load';
@@ -36,7 +32,6 @@ import { searchSendersForResourceLocator } from './resources/sender/load/sender.
 import { searchProspectsForResourceLocator } from './resources/Prospect/load/prospect.load';
 import { loadProspectsForIdDropdown } from './resources/Prospect/load/prospect.load';
 
-import { searchTagsForResourceLocator } from './resources/tag/load/tag.load';
 import { searchWorkspacesForResourceLocator } from './resources/workspace/load/workspace.load';
 
 // Error handling
@@ -106,9 +101,6 @@ export class MyApi implements INodeType {
       ...senderOperations,
       ...senderFields,
 
-      ...tagOperations,
-      ...tagFields,
-
       ...workspaceOperations,
       ...workspaceFields,
 
@@ -135,7 +127,6 @@ export class MyApi implements INodeType {
       searchUsers: searchUsersForResourceLocator,
       searchClientspaces: searchClientspacesForResourceLocator,
       searchSenders: searchSendersForResourceLocator,
-      searchTags: searchTagsForResourceLocator,
       searchWorkspaces: searchWorkspacesForResourceLocator,
       searchProspects: searchProspectsForResourceLocator,
       searchLists: searchListsForResourceLocator,
@@ -174,9 +165,8 @@ export class MyApi implements INodeType {
           data = await executeCampaign.call(this, operation, i);
         } else if (resource === 'sender') {
           data = await executeSender.call(this, operation, i);
-        } else if (resource === 'tag') {
-          data = await executeTag.call(this, operation, i);
-        } else {
+        } 
+        else {
           throw new Error(`Resource "${resource}" not supported`);
         }
 
