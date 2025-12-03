@@ -76,7 +76,6 @@ export class MyApi implements INodeType {
           { name: 'List', value: 'list' },
           { name: 'Client Space', value: 'clientspace' },
           { name: 'Sender' , value: 'sender'},
-          { name: 'Tag', value: 'tag' },
           { name: 'Workspace', value: 'workspace' },
           { name: 'Sequence', value: 'sequence' },
         ],
