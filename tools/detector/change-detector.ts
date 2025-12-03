@@ -8,6 +8,7 @@ export interface ChangeReport {
     removed: SwaggerEndpoint[];
     modified: SwaggerEndpoint[];
     unchanged: SwaggerEndpoint[];
+    schemasChanged: boolean;
 }
 
 export class ChangeDetector {
@@ -34,7 +35,8 @@ export class ChangeDetector {
             added: [],
             removed: [],
             modified: [],
-            unchanged: []
+            unchanged: [],
+            schemasChanged: this.hasSchemasChanged()
         };
 
         // Find added and modified endpoints
@@ -102,11 +104,26 @@ export class ChangeDetector {
         return crypto.createHash('md5').update(normalized).digest('hex');
     }
 
+    private hasSchemasChanged(): boolean {
+        const prevSchemas = this.previousSwagger.definitions || this.previousSwagger.components?.schemas || {};
+        const currSchemas = this.currentSwagger.definitions || this.currentSwagger.components?.schemas || {};
+
+        const prevHash = crypto.createHash('md5').update(JSON.stringify(prevSchemas)).digest('hex');
+        const currHash = crypto.createHash('md5').update(JSON.stringify(currSchemas)).digest('hex');
+
+        if (prevHash !== currHash) {
+            console.log('📦 Schema definitions have changed');
+            return true;
+        }
+        return false;
+    }
+
     shouldRegenerate(): boolean {
         const changes = this.detectChanges();
         return changes.added.length > 0 ||
             changes.removed.length > 0 ||
-            changes.modified.length > 0;
+            changes.modified.length > 0 ||
+            changes.schemasChanged;
     }
 
     printReport(): void {
@@ -117,6 +134,7 @@ export class ChangeDetector {
         console.log(`  ➕ Added: ${changes.added.length}`);
         console.log(`  ✏️  Modified: ${changes.modified.length}`);
         console.log(`  ➖ Removed: ${changes.removed.length}`);
+        console.log(`  📦 Schemas Changed: ${changes.schemasChanged ? 'YES' : 'No'}`);
 
         if (changes.added.length > 0) {
             console.log('\n  Added endpoints:');

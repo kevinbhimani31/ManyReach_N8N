@@ -198,7 +198,11 @@
         "summary": "Get campaign by ID",
         "description": "Retrieves campaign details by campaign ID for the authenticated organization.\r\n            \r\nBehavior:\r\n- Extracts and validates the API key (from header or query).\r\n- Authenticates organization using the API key.\r\n- Validates that the campaign exists and is owned by the organization.\r\n- Returns campaign details: name, status, creation date, engagement metrics, or 404/403 accordingly.",
         "operationId": "ApiCampaign_GetCampaignByID",
-        "consumes": [],
+        "consumes": [
+          "application/json",
+          "text/json",
+          "application/x-www-form-urlencoded"
+        ],
         "produces": [
           "application/json",
           "text/json"
@@ -213,6 +217,15 @@
             "format": "int32",
             "maximum": 2147483647,
             "minimum": 1
+          },
+          {
+            "name": "email",
+            "in": "body",
+            "description": "Parameter: email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -6391,12 +6404,6 @@
           "description": "Enable sending campaign emails on Sunday.",
           "type": "boolean",
           "default": true
-        },
-        "thisIsString": {
-          "type": "string"
-        },
-        "thisIsBool": {
-          "type": "boolean"
         }
       },
       "xml": {
